@@ -1,0 +1,2681 @@
+<!doctype html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GLAM - Typography Photo & Video Prompt Generator</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800;900&family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body { box-sizing: border-box; }
+    .font-luxury { font-family: 'Cinzel', serif; }
+    .font-body { font-family: 'Montserrat', sans-serif; }
+
+    @keyframes glowPulse {
+      0%, 100% { box-shadow: 0 0 18px rgba(212,175,55,.25); }
+      50% { box-shadow: 0 0 36px rgba(212,175,55,.5); }
+    }
+
+    .glow-pulse { animation: glowPulse 2.2s ease-in-out infinite; }
+
+    .luxury-card {
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(10px);
+      border: 2px solid rgba(212,175,55,.18);
+      transition: all .35s ease;
+    }
+
+    .luxury-card:hover {
+      border-color: rgba(212,175,55,.45);
+      box-shadow: 0 18px 50px rgba(212,175,55,.18);
+    }
+
+    .output-box {
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .accent-ring:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(212,175,55,.18);
+      border-color: rgba(212,175,55,.55) !important;
+    }
+
+    select optgroup {
+      font-weight: 700;
+      color: #111827;
+      background: #f3f4f6;
+    }
+
+    .social-link {
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .social-link:hover {
+      transform: translateY(-2px) scale(1.03);
+      border-color: rgba(212,175,55,.5);
+      box-shadow: 0 10px 24px rgba(212,175,55,.18);
+    }
+
+
+    .marquee-shell {
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0,0,0,.16);
+      backdrop-filter: blur(8px);
+    }
+
+    .marquee-track {
+      display: flex;
+      width: max-content;
+      min-width: 100%;
+      animation: glamMarquee 22s linear infinite;
+      will-change: transform;
+    }
+
+    .marquee-text {
+      flex: 0 0 auto;
+      padding-right: 3rem;
+      white-space: nowrap;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: .02em;
+      font-size: clamp(.85rem, 1.6vw, 1rem);
+    }
+
+    @keyframes glamMarquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+  </style>
+  <style>
+    @view-transition { navigation: auto; }
+
+    @keyframes floatOrb {
+      0% { transform: translate3d(0, 0, 0) scale(1); opacity: .35; }
+      50% { transform: translate3d(20px, -30px, 0) scale(1.08); opacity: .55; }
+      100% { transform: translate3d(-12px, -60px, 0) scale(.98); opacity: .25; }
+    }
+
+    @keyframes shimmerLine {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes toastIn {
+      0% { opacity: 0; transform: translateY(14px) scale(.98); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .luxury-orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(10px);
+      pointer-events: none;
+      animation: floatOrb 11s ease-in-out infinite alternate;
+    }
+
+    .shimmer-bar {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shimmer-bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+      transform: translateX(-100%);
+      animation: shimmerLine 3.4s linear infinite;
+      pointer-events: none;
+    }
+
+    .premium-panel {
+      background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.94));
+      border: 1px solid rgba(212,175,55,.18);
+      box-shadow: 0 10px 35px rgba(15,23,42,.18);
+    }
+
+    .toast-show {
+      animation: toastIn .22s ease-out;
+    }
+
+    .scroll-fab {
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 0 1px rgba(212,175,55,.2), 0 10px 30px rgba(15,23,42,.22);
+    }
+
+    .pill-badge {
+      border: 1px solid rgba(212,175,55,.2);
+      background: rgba(255,255,255,.9);
+    }
+
+    .lock-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .35rem;
+      min-width: 76px;
+      padding: .42rem .7rem;
+      border-radius: 999px;
+      border: 1px solid rgba(212,175,55,.28);
+      background: rgba(255,255,255,.92);
+      color: #1e3a8a;
+      font-size: .78rem;
+      font-weight: 700;
+      transition: all .2s ease;
+      box-shadow: 0 8px 24px rgba(15,23,42,.08);
+    }
+
+    .lock-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 28px rgba(30,58,138,.12);
+    }
+
+    .lock-btn.is-locked {
+      background: linear-gradient(135deg, rgba(30,58,138,.98), rgba(124,58,237,.98));
+      color: #fff;
+      border-color: rgba(212,175,55,.55);
+    }
+
+    .field-locked {
+      border-color: rgba(124,58,237,.55) !important;
+      box-shadow: 0 0 0 4px rgba(124,58,237,.10);
+    }
+
+
+    @keyframes glamMarqueeScroll {
+      0% { transform: translate3d(0, 0, 0); }
+      100% { transform: translate3d(-50%, 0, 0); }
+    }
+
+    .glam-marquee-bar {
+      position: relative;
+      z-index: 60;
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(212,175,55,.28);
+      background: linear-gradient(90deg, rgba(15,23,42,.98), rgba(30,58,138,.97), rgba(15,23,42,.98));
+      box-shadow: 0 10px 24px rgba(15,23,42,.18);
+    }
+
+    .glam-marquee-track {
+      display: flex;
+      width: max-content;
+      min-width: 100%;
+      will-change: transform;
+      animation: glamMarqueeScroll 24s linear infinite;
+    }
+
+    .glam-marquee-content {
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      white-space: nowrap;
+      padding: .9rem 0;
+    }
+
+    .glam-marquee-text {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.75rem;
+      padding-right: 1.75rem;
+      font-size: .95rem;
+      line-height: 1;
+      font-weight: 700;
+      letter-spacing: .04em;
+      color: #f8fafc;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 768px) {
+      .glam-marquee-content {
+        padding: .78rem 0;
+      }
+
+      .glam-marquee-text {
+        gap: 1.25rem;
+        padding-right: 1.25rem;
+        font-size: .8rem;
+      }
+    }
+
+
+    @keyframes twinkleSpark {
+      0%, 100% { opacity: .18; transform: scale(.85); }
+      50% { opacity: .95; transform: scale(1.35); }
+    }
+
+    @keyframes driftBeam {
+      0% { transform: translateY(-2%) rotate(0deg); opacity: .18; }
+      50% { transform: translateY(2%) rotate(2deg); opacity: .34; }
+      100% { transform: translateY(-1%) rotate(-1deg); opacity: .16; }
+    }
+
+    @keyframes pulseGrid {
+      0%, 100% { opacity: .18; transform: scale(1); }
+      50% { opacity: .34; transform: scale(1.04); }
+    }
+
+    .glam-grid-glow {
+      position: absolute;
+      inset: -8%;
+      background:
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,.16) 0%, rgba(255,255,255,0) 26%),
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+      background-size: auto, 34px 34px, 34px 34px;
+      mix-blend-mode: screen;
+      opacity: .22;
+      filter: blur(.2px);
+      animation: pulseGrid 10s ease-in-out infinite;
+    }
+
+    .glam-light-beam {
+      position: absolute;
+      top: -12%;
+      width: 30vw;
+      min-width: 220px;
+      height: 130vh;
+      border-radius: 9999px;
+      filter: blur(18px);
+      opacity: .2;
+      mix-blend-mode: screen;
+      animation: driftBeam 13s ease-in-out infinite;
+    }
+
+    .glam-light-beam.left {
+      left: -6vw;
+      background: linear-gradient(180deg, rgba(212,175,55,.26), rgba(212,175,55,0));
+      transform: rotate(-12deg);
+    }
+
+    .glam-light-beam.right {
+      right: -7vw;
+      background: linear-gradient(180deg, rgba(124,58,237,.23), rgba(124,58,237,0));
+      transform: rotate(10deg);
+      animation-duration: 15s;
+    }
+
+    .glam-bg-stars {
+      position: absolute;
+      inset: 0;
+    }
+
+    .glam-bg-star {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: radial-gradient(circle, rgba(255,255,255,.95) 0%, rgba(212,175,55,.75) 35%, rgba(255,255,255,0) 72%);
+      box-shadow: 0 0 18px rgba(255,255,255,.22);
+      animation: twinkleSpark 3.8s ease-in-out infinite;
+    }
+
+    .glam-bg-star.s2 { width: 12px; height: 12px; animation-duration: 5.2s; }
+    .glam-bg-star.s3 { width: 6px; height: 6px; animation-duration: 4.4s; }
+
+    @media (max-width: 768px) {
+      .glam-grid-glow { background-size: auto, 24px 24px, 24px 24px; opacity: .16; }
+      .glam-light-beam { width: 46vw; filter: blur(14px); opacity: .16; }
+      .glam-bg-star { box-shadow: 0 0 12px rgba(255,255,255,.16); }
+    }
+
+
+    @keyframes glamAuroraSweep {
+      0% { transform: translate3d(-8%, 0, 0) rotate(0deg) scale(1); opacity: .28; }
+      50% { transform: translate3d(6%, -2%, 0) rotate(8deg) scale(1.12); opacity: .5; }
+      100% { transform: translate3d(-4%, 2%, 0) rotate(-6deg) scale(.96); opacity: .24; }
+    }
+
+    @keyframes glamBlobFloat {
+      0% { transform: translate3d(0, 0, 0) scale(1); }
+      33% { transform: translate3d(34px, -28px, 0) scale(1.12); }
+      66% { transform: translate3d(-24px, 22px, 0) scale(.94); }
+      100% { transform: translate3d(12px, -14px, 0) scale(1.05); }
+    }
+
+    @keyframes glamSparkleDrift {
+      0% { transform: translateY(0) scale(.9); opacity: .18; }
+      50% { transform: translateY(-14px) scale(1.18); opacity: .9; }
+      100% { transform: translateY(0) scale(.96); opacity: .22; }
+    }
+
+    .glam-aurora-ribbon {
+      position: absolute;
+      inset: auto;
+      width: 68vw;
+      min-width: 340px;
+      max-width: 980px;
+      height: 38vh;
+      border-radius: 9999px;
+      filter: blur(38px);
+      mix-blend-mode: screen;
+      pointer-events: none;
+      opacity: .42;
+      animation: glamAuroraSweep 18s ease-in-out infinite;
+    }
+
+    .glam-aurora-ribbon.r1 {
+      top: 2%;
+      left: -10%;
+      background: radial-gradient(ellipse at center, rgba(212,175,55,.30) 0%, rgba(212,175,55,.16) 30%, rgba(212,175,55,0) 72%);
+    }
+
+    .glam-aurora-ribbon.r2 {
+      top: 22%;
+      right: -14%;
+      background: radial-gradient(ellipse at center, rgba(59,130,246,.30) 0%, rgba(124,58,237,.20) 34%, rgba(124,58,237,0) 72%);
+      animation-duration: 20s;
+      animation-delay: -4s;
+    }
+
+    .glam-aurora-ribbon.r3 {
+      bottom: -3%;
+      left: 12%;
+      background: radial-gradient(ellipse at center, rgba(255,255,255,.16) 0%, rgba(236,72,153,.14) 34%, rgba(236,72,153,0) 72%);
+      animation-duration: 22s;
+      animation-delay: -8s;
+    }
+
+    .glam-blob {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(18px);
+      opacity: .44;
+      mix-blend-mode: screen;
+      pointer-events: none;
+      animation: glamBlobFloat 11s ease-in-out infinite;
+    }
+
+    .glam-blob.b1 { top: 10%; left: 6%; width: 180px; height: 180px; background: radial-gradient(circle, rgba(212,175,55,.42) 0%, rgba(212,175,55,0) 72%); }
+    .glam-blob.b2 { top: 18%; right: 8%; width: 220px; height: 220px; background: radial-gradient(circle, rgba(59,130,246,.42) 0%, rgba(59,130,246,0) 72%); animation-duration: 14s; }
+    .glam-blob.b3 { bottom: 12%; left: 20%; width: 240px; height: 240px; background: radial-gradient(circle, rgba(124,58,237,.34) 0%, rgba(124,58,237,0) 72%); animation-duration: 16s; }
+    .glam-blob.b4 { bottom: 6%; right: 16%; width: 200px; height: 200px; background: radial-gradient(circle, rgba(255,255,255,.22) 0%, rgba(255,255,255,0) 72%); animation-duration: 13s; }
+
+    .glam-bg-star {
+      animation: glamSparkleDrift 3.8s ease-in-out infinite;
+    }
+
+    @media (max-width: 768px) {
+      .glam-aurora-ribbon { width: 110vw; height: 30vh; filter: blur(28px); opacity: .34; }
+      .glam-blob.b1, .glam-blob.b2, .glam-blob.b3, .glam-blob.b4 { width: 120px; height: 120px; filter: blur(14px); opacity: .38; }
+    }
+
+  </style>
+</head>
+<body class="h-full font-body bg-black">
+
+  <div aria-hidden="true" class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="glam-grid-glow"></div>
+    <div class="glam-aurora-ribbon r1"></div>
+    <div class="glam-aurora-ribbon r2"></div>
+    <div class="glam-aurora-ribbon r3"></div>
+    <div class="glam-blob b1"></div>
+    <div class="glam-blob b2"></div>
+    <div class="glam-blob b3"></div>
+    <div class="glam-blob b4"></div>
+    <div class="glam-light-beam left"></div>
+    <div class="glam-light-beam right"></div>
+    <div class="glam-bg-stars">
+      <span class="glam-bg-star s2" style="top: 8%; left: 12%; animation-delay: .3s;"></span>
+      <span class="glam-bg-star s3" style="top: 14%; left: 74%; animation-delay: 1.6s;"></span>
+      <span class="glam-bg-star" style="top: 22%; left: 56%; animation-delay: 2.1s;"></span>
+      <span class="glam-bg-star s2" style="top: 32%; left: 24%; animation-delay: .9s;"></span>
+      <span class="glam-bg-star s3" style="top: 40%; left: 82%; animation-delay: 2.8s;"></span>
+      <span class="glam-bg-star" style="top: 48%; left: 10%; animation-delay: 1.1s;"></span>
+      <span class="glam-bg-star s2" style="top: 56%; left: 65%; animation-delay: 3.2s;"></span>
+      <span class="glam-bg-star s3" style="top: 66%; left: 38%; animation-delay: .6s;"></span>
+      <span class="glam-bg-star" style="top: 74%; left: 88%; animation-delay: 2.3s;"></span>
+      <span class="glam-bg-star s2" style="top: 82%; left: 18%; animation-delay: 1.9s;"></span>
+      <span class="glam-bg-star s3" style="top: 86%; left: 58%; animation-delay: 3.4s;"></span>
+      <span class="glam-bg-star" style="top: 12%; left: 92%; animation-delay: .5s;"></span>
+    </div>
+    <div class="luxury-orb top-16 left-8 w-40 h-40" style="background: radial-gradient(circle, rgba(212,175,55,.32) 0%, rgba(212,175,55,0) 70%);"></div>
+    <div class="luxury-orb top-1/4 right-10 w-64 h-64" style="background: radial-gradient(circle, rgba(37,99,235,.30) 0%, rgba(37,99,235,0) 72%); animation-duration: 14s;"></div>
+    <div class="luxury-orb bottom-20 left-1/3 w-56 h-56" style="background: radial-gradient(circle, rgba(124,58,237,.24) 0%, rgba(124,58,237,0) 70%); animation-duration: 16s;"></div>
+    <div class="luxury-orb top-[38%] left-[46%] w-44 h-44" style="background: radial-gradient(circle, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 72%); animation-duration: 12s;"></div>
+    <div class="luxury-orb bottom-[8%] right-[18%] w-48 h-48" style="background: radial-gradient(circle, rgba(212,175,55,.18) 0%, rgba(212,175,55,0) 72%); animation-duration: 18s;"></div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-5 py-3 rounded-2xl text-sm md:text-base font-semibold text-white shadow-2xl toast-show" style="background: linear-gradient(135deg, #0f172a, #1e3a8a);"></div>
+
+  <div class="fixed right-4 bottom-6 z-40 flex flex-col gap-3">
+    <button id="scroll-up-btn" class="scroll-fab w-12 h-12 rounded-full text-white text-xl font-bold transition-all hover:scale-105" style="background: linear-gradient(135deg, rgba(30,58,138,.9), rgba(124,58,237,.9));">↑</button>
+    <button id="scroll-down-btn" class="scroll-fab w-12 h-12 rounded-full text-white text-xl font-bold transition-all hover:scale-105" style="background: linear-gradient(135deg, rgba(212,175,55,.92), rgba(124,58,237,.9));">↓</button>
+  </div>
+
+  <div id="app-wrapper" class="min-h-full w-full overflow-auto">
+    <section class="relative py-16 px-4 md:px-6 overflow-hidden" style="background: linear-gradient(180deg, #0f172a 0%, #1e293b 48%, #1e3a8a 100%);">
+      <div aria-hidden="true" class="absolute inset-0 pointer-events-none">
+        <div class="glam-aurora-ribbon r1" style="top: 6%; left: -18%; opacity: .34;"></div>
+        <div class="glam-aurora-ribbon r2" style="top: 26%; right: -20%; opacity: .32;"></div>
+        <div class="glam-aurora-ribbon r3" style="bottom: -8%; left: 0%; opacity: .30;"></div>
+      </div>
+      <div class="max-w-7xl mx-auto relative z-10">
+
+
+        <div class="text-center mb-12">
+          <h1 id="generator-heading" class="text-4xl md:text-5xl font-luxury font-bold text-white mb-4">
+            Fantasy 3D Word Art <span style="color:#D4AF37;">Prompt Generator</span>
+          </h1>
+          <p id="generator-subtitle" class="text-lg text-gray-300 max-w-3xl mx-auto">
+            Create premium text art prompts with bold style, depth, and luxury detail.
+          </p>
+          <div class="glam-marquee-bar mt-6 mx-auto max-w-5xl rounded-2xl overflow-hidden" aria-label="Announcement bar">
+            <div class="glam-marquee-track">
+              <div class="glam-marquee-content">
+                <span class="glam-marquee-text">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+                <span class="glam-marquee-text" aria-hidden="true">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+                <span class="glam-marquee-text" aria-hidden="true">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+                <span class="glam-marquee-text" aria-hidden="true">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+              </div>
+              <div class="glam-marquee-content" aria-hidden="true">
+                <span class="glam-marquee-text">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+                <span class="glam-marquee-text">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+                <span class="glam-marquee-text">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+                <span class="glam-marquee-text">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 flex flex-wrap justify-center gap-3 text-sm">
+            <span class="pill-badge px-4 py-2 rounded-full text-gray-800">Luxury prompt polish</span>
+            <span class="pill-badge px-4 py-2 rounded-full text-gray-800">Smarter random combos</span>
+            <span class="pill-badge px-4 py-2 rounded-full text-gray-800">Instant copy + download</span>
+            <span class="pill-badge px-4 py-2 rounded-full text-gray-800">Caption and CTA ideas</span>
+          </div>
+        </div>
+
+        <div class="luxury-card rounded-3xl p-6 md:p-10 shadow-2xl">
+          <!-- TEXT INPUTS -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div>
+              <label for="main-text" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🔤 Main Text</label>
+              <input id="main-text" type="text" placeholder='Example: "KING", "SURFYRE", "GLAM", "QUEEN ENERGY"' class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;">
+            </div>
+            <div>
+              <label for="story-action" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🎬 Typography Action / Story Beat</label>
+              <input id="story-action" type="text" placeholder='Example: chrome script glowing on a wall, graffiti letters pulsing with neon, dripping bubble text reveal' class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;">
+            </div>
+          </div>
+
+          <!-- OUTPUT MODE -->
+          <div class="mb-8">
+            <label class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🪄 Output Mode</label>
+            <div class="flex flex-wrap gap-3">
+              <label class="inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white cursor-pointer" style="border-color: rgba(212,175,55,.25);">
+                <input type="radio" name="output-mode" value="photo" checked>
+                <span class="font-medium text-gray-700">Photo Prompt</span>
+              </label>
+              <label class="inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white cursor-pointer" style="border-color: rgba(212,175,55,.25);">
+                <input type="radio" name="output-mode" value="video">
+                <span class="font-medium text-gray-700">Video Script Prompt</span>
+              </label>
+              <label class="inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white cursor-pointer" style="border-color: rgba(212,175,55,.25);">
+                <input type="radio" name="output-mode" value="both">
+                <span class="font-medium text-gray-700">Both</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- STYLE PRESET -->
+          <div class="mb-8">
+            <label for="style-preset" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🎛️ Style Preset</label>
+            <select id="style-preset" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+          </div>
+
+          <!-- CONTROLS -->
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div>
+              <label for="typography-style" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🎨 Font / Object Style</label>
+              <select id="typography-style" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="letter-structure" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🔠 Letter Structure</label>
+              <select id="letter-structure" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="surface-finish" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">💎 Surface Finish</label>
+              <select id="surface-finish" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="aesthetic-style" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">💫 Aesthetic</label>
+              <select id="aesthetic-style" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="text-effect" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">✨ Text Effect</label>
+              <select id="text-effect" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="text-layout" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🧱 Text Layout</label>
+              <select id="text-layout" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="decor-extras" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">✨ Decor Extras</label>
+              <select id="decor-extras" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="outline-style" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🖊️ Outline Style</label>
+              <select id="outline-style" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="background-environment" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🌆 Background / Environment</label>
+              <select id="background-environment" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="camera-angle" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">📸 Camera Angle</label>
+              <select id="camera-angle" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="camera-lens" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🔍 Camera Lens</label>
+              <select id="camera-lens" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="shot-type" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🎥 Shot Type</label>
+              <select id="shot-type" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="camera-move" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🎞️ Camera Movement</label>
+              <select id="camera-move" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="lighting-style" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">💡 Lighting</label>
+              <select id="lighting-style" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="shadow-style" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🌒 Shadow</label>
+              <select id="shadow-style" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="color-palette" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">🎨 Color Palette</label>
+              <select id="color-palette" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="aspect-ratio" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">📐 Aspect Ratio</label>
+              <select id="aspect-ratio" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="motion-style" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">⚡ Motion / Energy</label>
+              <select id="motion-style" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+
+            <div>
+              <label for="detail-boost" class="block text-sm font-semibold mb-3" style="color:#1e3a8a;">✨ Detail Boost</label>
+              <select id="detail-boost" class="w-full px-5 py-4 rounded-xl border-2 text-base accent-ring transition-all" style="border-color: rgba(212,175,55,.3); background:#fff;"></select>
+            </div>
+          </div>
+
+          <!-- BUTTONS -->
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
+            <button id="randomize-btn" class="w-full py-4 px-5 rounded-xl font-bold text-base transition-all hover:scale-[1.02]" style="background: linear-gradient(135deg, #1e40af, #2563eb); color:#fff;">
+              🎲 Randomize
+            </button>
+            <button id="clear-btn" class="w-full py-4 px-5 rounded-xl font-bold text-base transition-all hover:scale-[1.02]" style="background: linear-gradient(135deg, #475569, #334155); color:#fff;">
+              🧼 Clear All
+            </button>
+            <button id="generate-btn" class="w-full py-4 px-5 rounded-xl font-bold text-base transition-all hover:scale-[1.02] glow-pulse shimmer-bar" style="background: linear-gradient(135deg, #D4AF37, #FFD700); color:#1e3a8a;">
+              ✨ Generate
+            </button>
+            <button id="copy-both-btn-top" class="w-full py-4 px-5 rounded-xl font-bold text-base transition-all hover:scale-[1.02]" style="background: linear-gradient(135deg, #7c3aed, #9333ea); color:#fff;">
+              📋 Copy Both
+            </button>
+          </div>
+
+          <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+            <div class="premium-panel rounded-2xl px-4 py-3 text-gray-700">
+              <strong style="color:#1e3a8a;">Pro move:</strong> pick a preset first, then tweak 2 to 4 dropdowns so the prompt stays premium instead of random as hell.
+            </div>
+            <div class="premium-panel rounded-2xl px-4 py-3 text-gray-700">
+              <strong style="color:#1e3a8a;">Best use:</strong> photo prompts for ChatGPT, Gemini, Bing Image Creator. Video prompts for Runway, Pika, Veo, or similar tools.
+            </div>
+            <div class="premium-panel rounded-2xl px-4 py-3 text-gray-700">
+              <strong style="color:#1e3a8a;">Conversion tip:</strong> use the caption ideas below the output to turn your prompt into a sellable product teaser.
+            </div>
+          </div>
+        </div>
+
+        <!-- OUTPUT -->
+        <div id="output-section" class="hidden mt-10">
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            <div id="photo-card" class="luxury-card rounded-3xl p-6 md:p-8 shadow-2xl">
+              <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                <h3 class="font-luxury text-2xl font-bold" style="color:#1e3a8a;">Photo Prompt</h3>
+                <div class="flex flex-wrap gap-2">
+                  <button id="copy-photo-btn" class="px-4 py-2 rounded-lg font-semibold text-sm" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color:#fff;">Copy Photo</button>
+                  <button id="download-photo-btn" class="px-4 py-2 rounded-lg font-semibold text-sm" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color:#fff;">Download Photo</button>
+                </div>
+              </div>
+              <div id="photo-output" class="output-box rounded-xl p-5 border-2 text-[15px] leading-7" style="background: rgba(30,58,138,.05); border-color: rgba(212,175,55,.2); color:#1e3a8a;"></div>
+            </div>
+
+            <div id="video-card" class="luxury-card rounded-3xl p-6 md:p-8 shadow-2xl">
+              <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+                <h3 class="font-luxury text-2xl font-bold" style="color:#1e3a8a;">Video Script Prompt</h3>
+                <div class="flex flex-wrap gap-2">
+                  <button id="copy-video-btn" class="px-4 py-2 rounded-lg font-semibold text-sm" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color:#fff;">Copy Video</button>
+                  <button id="download-video-btn" class="px-4 py-2 rounded-lg font-semibold text-sm" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color:#fff;">Download Video</button>
+                </div>
+              </div>
+              <div id="video-output" class="output-box rounded-xl p-5 border-2 text-[15px] leading-7" style="background: rgba(30,58,138,.05); border-color: rgba(212,175,55,.2); color:#1e3a8a;"></div>
+            </div>
+          </div>
+
+          <div class="mt-6 text-center flex flex-wrap items-center justify-center gap-3">
+            <button id="copy-both-btn-bottom" class="px-6 py-3 rounded-xl font-bold" style="background: linear-gradient(135deg, #7c3aed, #9333ea); color:#fff;">
+              📋 Copy Both Outputs
+            </button>
+            <button id="download-both-btn" class="px-6 py-3 rounded-xl font-bold" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color:#fff;">
+              ⬇️ Download Both
+            </button>
+            <button id="more-variations-btn" class="px-6 py-3 rounded-xl font-bold" style="background: linear-gradient(135deg, #d97706, #f59e0b); color:#fff;">
+              ✨ 3 More Variations
+            </button>
+          </div>
+
+          <div id="variations-card" class="luxury-card rounded-3xl p-6 md:p-8 shadow-2xl mt-6 hidden">
+            <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+              <h4 class="font-luxury text-xl font-bold" style="color:#1e3a8a;">3 More Prompt Variations</h4>
+              <button id="copy-variations-btn" class="px-4 py-2 rounded-lg font-semibold text-sm" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color:#fff;">Copy Variations</button>
+            </div>
+            <div id="variations-output" class="output-box rounded-xl p-5 border-2 text-[15px] leading-7" style="background: rgba(30,58,138,.05); border-color: rgba(212,175,55,.2); color:#1e3a8a;"></div>
+          </div>
+
+          <div class="grid grid-cols-1 xl:grid-cols-4 gap-6 mt-6">
+            <div class="luxury-card rounded-3xl p-6 shadow-2xl">
+              <h4 class="font-luxury text-xl font-bold mb-3" style="color:#1e3a8a;">Caption Ideas</h4>
+              <div id="caption-suggestions" class="text-sm leading-7 text-gray-700"></div>
+            </div>
+            <div class="luxury-card rounded-3xl p-6 shadow-2xl">
+              <h4 class="font-luxury text-xl font-bold mb-3" style="color:#1e3a8a;">Product Hook</h4>
+              <div id="product-suggestions" class="text-sm leading-7 text-gray-700"></div>
+            </div>
+            <div class="luxury-card rounded-3xl p-6 shadow-2xl">
+              <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+                <h4 class="font-luxury text-xl font-bold" style="color:#1e3a8a;">Recent Prompt History</h4>
+                <button id="clear-history-btn" class="px-3 py-2 rounded-lg font-semibold text-xs" style="background: linear-gradient(135deg, #475569, #334155); color:#fff;">Clear History</button>
+              </div>
+              <div id="history-output" class="text-sm leading-7 text-gray-700"></div>
+            </div>
+            <div class="luxury-card rounded-3xl p-6 shadow-2xl">
+              <div class="flex items-center justify-between gap-3 mb-3 flex-wrap">
+                <h4 class="font-luxury text-xl font-bold" style="color:#1e3a8a;">Jingle / Song Prompt</h4>
+                <div class="flex flex-wrap gap-2">
+                  <button id="copy-jingle-btn" class="px-3 py-2 rounded-lg font-semibold text-xs" style="background: linear-gradient(135deg, #1e3a8a, #2563eb); color:#fff;">Copy Jingle</button>
+                  <button id="download-jingle-btn" class="px-3 py-2 rounded-lg font-semibold text-xs" style="background: linear-gradient(135deg, #0f766e, #14b8a6); color:#fff;">Download Jingle</button>
+                </div>
+              </div>
+              <div id="jingle-output" class="text-sm leading-7 text-gray-700"></div>
+            </div>
+          </div>
+
+          <div class="luxury-card rounded-3xl p-6 md:p-8 shadow-2xl mt-6">
+            <div class="flex items-center justify-between gap-3 mb-4 flex-wrap">
+              <h4 class="font-luxury text-2xl font-bold" style="color:#1e3a8a;">Marketing Boost Pack</h4>
+              <button id="copy-marketing-btn" class="px-4 py-2 rounded-lg font-semibold text-sm" style="background: linear-gradient(135deg, #7c3aed, #9333ea); color:#fff;">Copy Marketing Pack</button>
+            </div>
+            <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+              <div class="rounded-3xl p-5" style="background: rgba(30,58,138,.05); border:1px solid rgba(212,175,55,.16);">
+                <h5 class="font-luxury text-lg font-bold mb-3" style="color:#1e3a8a;">Website CTA</h5>
+                <div id="website-cta-output" class="text-sm leading-7 text-gray-700"></div>
+              </div>
+              <div class="rounded-3xl p-5" style="background: rgba(30,58,138,.05); border:1px solid rgba(212,175,55,.16);">
+                <h5 class="font-luxury text-lg font-bold mb-3" style="color:#1e3a8a;">Sales Description</h5>
+                <div id="sales-copy-output" class="text-sm leading-7 text-gray-700"></div>
+              </div>
+              <div class="rounded-3xl p-5" style="background: rgba(30,58,138,.05); border:1px solid rgba(212,175,55,.16);">
+                <h5 class="font-luxury text-lg font-bold mb-3" style="color:#1e3a8a;">Promo Angles</h5>
+                <div id="promo-angles-output" class="text-sm leading-7 text-gray-700"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="luxury-card rounded-3xl p-6 md:p-8 shadow-2xl mt-10">
+          <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+            <div>
+              <p class="text-sm md:text-base font-semibold" style="color:#1e3a8a;">
+                © <span id="footer-year"></span> All rights reserved by glamorousgrammyglowup.
+              </p>
+              <p class="text-xs md:text-sm text-gray-600 mt-1">
+                Built for typography prompt creation, not character generation.
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-3">
+              <a class="social-link inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white text-sm font-semibold text-gray-700"
+                 style="border-color: rgba(212,175,55,.25);"
+                 href="https://www.tiktok.com/@promptlikeglam?is_from_webapp=1&sender_device=pc"
+                 target="_blank" rel="noopener noreferrer">
+                <span>🎵</span><span>TikTok</span>
+              </a>
+
+              <a class="social-link inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white text-sm font-semibold text-gray-700"
+                 style="border-color: rgba(212,175,55,.25);"
+                 href="https://www.youtube.com/@Glamorousaiprompts"
+                 target="_blank" rel="noopener noreferrer">
+                <span>▶️</span><span>YouTube</span>
+              </a>
+
+              <a class="social-link inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white text-sm font-semibold text-gray-700"
+                 style="border-color: rgba(212,175,55,.25);"
+                 href="https://www.instagram.com/glam_ai_for_beginners/"
+                 target="_blank" rel="noopener noreferrer">
+                <span>📸</span><span>Instagram</span>
+              </a>
+
+              <a class="social-link inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white text-sm font-semibold text-gray-700"
+                 style="border-color: rgba(212,175,55,.25);"
+                 href="https://www.pinterest.com/glamaiforbeginners/"
+                 target="_blank" rel="noopener noreferrer">
+                <span>📌</span><span>Pinterest</span>
+              </a>
+
+              <a class="social-link inline-flex items-center gap-2 px-4 py-3 rounded-xl border-2 bg-white text-sm font-semibold text-gray-700"
+                 style="border-color: rgba(212,175,55,.25);"
+                 href="https://www.facebook.com/share/g/14d49MXbk9h/"
+                 target="_blank" rel="noopener noreferrer">
+                <span>👥</span><span>FB Group</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const defaultConfig = {
+      generator_heading: "Fantasy 3D Word Art Prompt Generator",
+      generator_subtitle: "Create premium text art prompts with bold style, depth, and luxury detail.",
+      font_family: "Montserrat",
+      font_size: 16
+    };
+
+    const fieldIds = [
+      "typography-style",
+      "letter-structure",
+      "surface-finish",
+      "aesthetic-style",
+      "text-effect",
+      "text-layout",
+      "decor-extras",
+      "outline-style",
+      "background-environment",
+      "camera-angle",
+      "camera-lens",
+      "shot-type",
+      "camera-move",
+      "lighting-style",
+      "shadow-style",
+      "color-palette",
+      "aspect-ratio",
+      "motion-style",
+      "detail-boost"
+    ];
+
+    const lockableFieldIds = ["style-preset", ...fieldIds];
+    const lockedFields = new Set();
+    const LOCK_STORAGE_KEY = "glamTypographyLockedFields";
+
+    const groupedTypographyStyles = {
+      "🍩 Food & Sweets": [
+        "Bubblegum letters (shiny pink spheres)",
+        "Cake letters (frosting + layers)",
+        "Candy letters (hard candy gloss)",
+        "Caramel letters (sticky golden drips)",
+        "Chocolate drip letters",
+        "Cookie letters (chocolate chips + crumbs)",
+        "Cotton candy letters (fluffy sugar clouds)",
+        "Donut letters (glaze + sprinkles)",
+        "Gummy bear letters (translucent jelly)",
+        "Honey letters (golden sticky drizzle)",
+        "Ice cream letters (soft melt drips)",
+        "Lollipop letters (swirl candy shine)",
+        "Marshmallow letters (soft puffy texture)",
+        "Pizza letters (melted cheese + toppings)",
+        "Popcorn letters (buttery kernels)",
+        "Pretzel letters (twisted dough + salt)"
+      ],
+      "🎈 Party & Celebration": [
+        "Balloon letters (latex + strings)",
+        "Candle letters (wax + flame)",
+        "Confetti letters (colorful paper pieces)",
+        "Foil balloon letters (shiny metallic)",
+        "Gift wrap letters (shiny paper + bows)",
+        "Party hat letters (cone shapes)",
+        "Piñata letters (papier-mâché texture)",
+        "Ribbon letters (satin flowing bows)",
+        "Streamer letters (twisted crepe paper)"
+      ],
+      "🧸 Fabric & Soft": [
+        "Cotton letters (soft fluffy clouds)",
+        "Denim letters (jean fabric + stitching)",
+        "Felt letters (craft fabric texture)",
+        "Fleece letters (cozy soft texture)",
+        "Fur letters (fluffy strands)",
+        "Knitted letters (yarn texture + stitches)",
+        "Lace letters (delicate pattern)",
+        "Leather letters (textured hide)",
+        "Plush letters (soft toy fabric)",
+        "Silk letters (smooth sheen fabric)",
+        "Velvet letters (luxury fabric)"
+      ],
+      "✨ Shiny & Sparkly": [
+        "Chrome letters (mirror metal)",
+        "Crystal letters (transparent gems)",
+        "Diamond letters (faceted crystal)",
+        "Glass letters (clear + refraction)",
+        "Glitter letters",
+        "Gold letters (shiny precious metal)",
+        "Holographic letters (rainbow iridescence)",
+        "Jelly letters (transparent gel)",
+        "Metallic foil letters",
+        "Metallic shimmer letters",
+        "Mirror letters (perfect reflection)",
+        "Pearl letters (lustrous spheres)",
+        "Sequin letters (overlapping discs)",
+        "Silver letters (polished metal)"
+      ],
+      "🧸 Fun & Playful": [
+        "Inflated bubble letters (3D puffy)",
+        "LEGO brick letters (plastic blocks)",
+        "Play-Doh letters (clay texture)",
+        "Puzzle piece letters (jigsaw interlocking)",
+        "Rubber duck letters (yellow squeaky toys)",
+        "Slime letters (glossy stretchy goo)",
+        "Soap bubble letters (transparent spheres)",
+        "Toy block letters (wooden alphabet blocks)"
+      ],
+      "🌿 Nature & Organic": [
+        "Cloud letters (fluffy white vapor)",
+        "Coral letters (underwater texture)",
+        "Fire letters (flames + embers)",
+        "Flower letters (petals + blooms)",
+        "Grass letters (green blades)",
+        "Ice letters (frozen crystals)",
+        "Leaf letters (green foliage)",
+        "Sand letters (beach granules)",
+        "Stone letters (rock texture)",
+        "Water letters (liquid droplets)",
+        "Wood letters (natural grain texture)"
+      ],
+      "🏙️ Industrial & Modern": [
+        "Brick letters (stacked masonry)",
+        "Concrete letters (rough cement)",
+        "LED letters (bright digital pixels)",
+        "Neon tube letters (glowing lights)",
+        "Steel letters (industrial metal)"
+      ]
+    };
+
+    const dropdownData = {
+      "letter-structure": [
+        "Angular graffiti cuts",
+        "Beveled block structure",
+        "Bold stacked display letters",
+        "Bubble round forms",
+        "Calligraphic swashes",
+        "Chunky rounded forms",
+        "Classic serif skeleton",
+        "Compressed vertical letterforms",
+        "Curved script flourishes",
+        "Decorative old-English structure",
+        "Die-cut sticker silhouette",
+        "Distorted warped lettering",
+        "Extended horizontal structure",
+        "Fat inflated letterforms",
+        "Fluid handstyle lettering",
+        "Geometric modular letters",
+        "Heavy block construction",
+        "Interlocked overlapping letters",
+        "Monoline smooth forms",
+        "Ornamental serif construction",
+        "Playful chunky curves",
+        "Ribbon-like strokes",
+        "Sharp gothic angles",
+        "Soft gel-like volume",
+        "Tall dramatic letterforms",
+        "Tight connected script",
+        "Twisted surreal structure",
+        "Wide hero letterforms",
+        "Wrapped underline swooshes"
+      ],
+      "surface-finish": [
+        "Airbrushed glossy paint",
+        "Brushed metal texture",
+        "Candy lacquer gloss",
+        "Chrome mirror finish",
+        "Cracked painted surface",
+        "Crystal glass finish",
+        "Diamond dust shimmer",
+        "Embossed metallic finish",
+        "Enamel luxury coating",
+        "Frosted translucent finish",
+        "Gel wet shine finish",
+        "Glitter packed surface",
+        "Glossy plastic vinyl",
+        "Gold leaf finish",
+        "Graffiti spray texture",
+        "Holographic rainbow sheen",
+        "Iridescent pearl finish",
+        "Liquid mercury chrome",
+        "Matte chalky texture",
+        "Neon tube glow surface",
+        "Polished gemstone finish",
+        "Reflective acrylic finish",
+        "Resin candy coating",
+        "Rhinestone encrusted finish",
+        "Rubberized soft finish",
+        "Satin metallic sheen",
+        "Sequin sparkle finish",
+        "Silver foil finish",
+        "Wet ink finish"
+      ],
+      "aesthetic-style": [
+        "Album-cover intensity",
+        "Baroque glam",
+        "Bossed-up luxury",
+        "Candy pop fantasy",
+        "Clean ad-campaign style",
+        "Cyber neon beauty",
+        "Dark opulent mood",
+        "Dreamy soft luxe",
+        "Editorial billboard glam",
+        "Electric street-art luxe",
+        "Fantasy magic realism",
+        "Glossy horror-pop",
+        "Graffiti poster energy",
+        "High-fashion commercial",
+        "Hyperreal typography art",
+        "Icy platinum elegance",
+        "Kawaii pop decadence",
+        "Liquid chrome drama",
+        "Luxury pop-art",
+        "Maximalist glam",
+        "Midnight noir polish",
+        "Modern streetwear elite",
+        "Neon nightclub shine",
+        "Old-money elegance",
+        "Pastel dream gloss",
+        "Regal queen-core mood",
+        "Retro-futurist finish",
+        "Sticker-art pop",
+        "Surreal city fantasy"
+      ],
+      "text-effect": [
+        "Beveled emboss effect",
+        "Chrome drip effect",
+        "Cracked edge effect",
+        "Crystalline shimmer effect",
+        "Distressed spray effect",
+        "Double glow effect",
+        "Dripping melt effect",
+        "Electric pulse effect",
+        "Fire edge effect",
+        "Floating sparkle effect",
+        "Frost edge effect",
+        "Gloss burst effect",
+        "Graffiti splatter effect",
+        "Inflated puff effect",
+        "Inner glow effect",
+        "Lens flare effect",
+        "Liquid metal effect",
+        "Marquee bulb effect",
+        "Mirror shine effect",
+        "Neon halo effect",
+        "Paint splash effect",
+        "Reflective shine effect",
+        "Ribbon wrap effect",
+        "Shadow depth effect",
+        "Shattered glass effect",
+        "Smoke trail effect",
+        "Soft glow effect",
+        "Sticker cutout effect",
+        "Wet gloss effect"
+      ],
+      "text-layout": [
+        "Arch bottom layout",
+        "Arch top layout",
+        "Badge emblem layout",
+        "Centered logo lockup",
+        "Circle layout",
+        "Corner stamp layout",
+        "Curved baseline layout",
+        "Diagonal slant layout",
+        "Double-line stacked layout",
+        "Floating layered layout",
+        "Frame-contained layout",
+        "Full-width banner layout",
+        "Horizontal wordmark layout",
+        "Icon plus wordmark layout",
+        "Left-heavy asymmetrical layout",
+        "Minimal centered layout",
+        "Offset stacked layout",
+        "Oval seal layout",
+        "Radial burst layout",
+        "Right-heavy asymmetrical layout",
+        "Shield crest layout",
+        "Single word hero layout",
+        "Split word layout",
+        "Stacked vertical layout",
+        "Sticker decal layout",
+        "Symmetrical poster layout",
+        "Tight compact layout",
+        "Wide cinematic layout",
+        "Wraparound flourish layout"
+      ],
+      "decor-extras": [
+        "Abstract splatter bursts",
+        "Bat-wing ornament accents",
+        "Chain details",
+        "Cloud puff accents",
+        "Confetti explosion accents",
+        "Crown topper detail",
+        "Crystal shard accents",
+        "Dripping paint trails",
+        "Electric lightning bolts",
+        "Fairy dust sparkles",
+        "Filigree luxury curls",
+        "Flame edge accents",
+        "Flower and rose details",
+        "Gemstone scatter accents",
+        "Glow particles",
+        "Graffiti ink splashes",
+        "Heart confetti accents",
+        "Marquee bulbs",
+        "Neon streak trails",
+        "Paint splash halos",
+        "Ribbon swooshes",
+        "Smoke wisps",
+        "Sparkle starbursts",
+        "Sticker-cut border accents",
+        "Swirling underline swooshes",
+        "Urban spray bursts",
+        "Wet drips",
+        "Winged fantasy accents",
+        "Wrapped ornament flourishes"
+      ],
+      "outline-style": [
+        "Bold black sticker edge",
+        "Chrome edge trim",
+        "Clean polished edge",
+        "Colored graffiti edge",
+        "Contour shadow edge",
+        "Cracked textured edge",
+        "Crisp poster outline",
+        "Cutout silhouette edge",
+        "Dark comic outline",
+        "Double rim outline",
+        "Electric neon outline",
+        "Embossed contour edge",
+        "Glow halo outline",
+        "Gradient edge trim",
+        "Heavy 3D extrusion edge",
+        "Hot pink edge line",
+        "Inner shadow edge",
+        "Ink stroke outline",
+        "Luxury beveled contour",
+        "Matte black outline",
+        "Multi-rim decorative edge",
+        "Reflective metallic edge",
+        "Rhinestone edge trim",
+        "Shadowed poster edge",
+        "Silver contour outline",
+        "Soft glossy contour",
+        "Sticker white border",
+        "Thick graffiti outline",
+        "Thin luxury pinline"
+      ],
+      "background-environment": [
+        "Aurora-lit skyline backdrop",
+        "Black marble luxury set",
+        "Blue neon brick wall",
+        "Candy gradient studio wall",
+        "Chrome tunnel corridor",
+        "City rooftop at night",
+        "Cloud palace atmosphere",
+        "Cracked concrete street wall",
+        "Crystal cave chamber",
+        "Dark studio spotlight room",
+        "Diamond vault interior",
+        "Editorial color sweep backdrop",
+        "Electric alley mural wall",
+        "Fashion runway stage",
+        "Fire and ember backdrop",
+        "Floating logo stage",
+        "Futuristic glass skyline",
+        "Gold foil glam backdrop",
+        "Grand royal hall",
+        "High-end penthouse backdrop",
+        "Holographic mirror room",
+        "Industrial warehouse wall",
+        "Jungle luxe foliage wall",
+        "Luxury dressing room wall",
+        "Moonlit balcony backdrop",
+        "Pastel cloud gradient",
+        "Plaster wall with texture",
+        "Rain-soaked neon street",
+        "White studio infinity wall"
+      ],
+      "camera-angle": [
+        "Aerial top-down angle",
+        "Close eye-level angle",
+        "Crowd-level upward angle",
+        "Diagonal dynamic tilt",
+        "Dramatic low angle",
+        "Extreme close-up angle",
+        "Front-facing hero angle",
+        "High angle beauty shot",
+        "Intimate side angle",
+        "Isometric cinematic angle",
+        "Left three-quarter angle",
+        "Long-lens distance angle",
+        "Low runway angle",
+        "Medium eye-level angle",
+        "Monumental upward angle",
+        "Profile side angle",
+        "Right three-quarter angle",
+        "Rotational orbit angle",
+        "Slight downward commercial angle",
+        "Slight upward angle",
+        "Straight-on centered angle",
+        "Symmetrical head-on angle",
+        "Top-front angle",
+        "Tracking side angle",
+        "Ultra-low street angle",
+        "Wide environmental angle",
+        "Worm's-eye fantasy angle",
+        "Wrapped billboard angle",
+        "Zoomed detail angle"
+      ],
+      "camera-lens": [
+        "100mm portrait lens",
+        "18mm ultra-wide lens",
+        "24mm wide-angle lens",
+        "28mm cinematic lens",
+        "35mm editorial lens",
+        "40mm natural perspective lens",
+        "50mm prime lens",
+        "58mm classic lens",
+        "70mm compression lens",
+        "85mm beauty lens",
+        "90mm fashion lens",
+        "Anamorphic cinema lens",
+        "Commercial product lens",
+        "Deep focus lens look",
+        "Documentary lens feel",
+        "Drone lens perspective",
+        "Fashion campaign lens",
+        "Fish-eye stylized lens",
+        "Glossy billboard lens",
+        "Macro detail lens",
+        "Medium-format fashion lens",
+        "Movie trailer lens",
+        "Phone camera realism lens",
+        "Shallow depth lens",
+        "Street photography lens",
+        "Studio beauty lens",
+        "Telephoto lens",
+        "Tilt-shift lens",
+        "Ultra-clean ad lens"
+      ],
+      "shot-type": [
+        "Beauty-detail crop",
+        "Centered hero shot",
+        "Close texture shot",
+        "Cover-style composition",
+        "Extreme macro detail shot",
+        "Full frame logo shot",
+        "Half-frame typography shot",
+        "Hero poster composition",
+        "Logo reveal composition",
+        "Magazine-cover composition",
+        "Marquee sign shot",
+        "Monumental billboard shot",
+        "Poster-ready centered shot",
+        "Product-meets-typography shot",
+        "Profile letter detail shot",
+        "Runway-sign composition",
+        "Scene-integrated logo shot",
+        "Social graphic style shot",
+        "Stacked layered composition shot",
+        "Sticker-cut composition shot",
+        "Street mural shot",
+        "Tight crop logo shot",
+        "Typography landscape shot",
+        "Typography portrait shot",
+        "Ultra-wide environmental shot",
+        "Wall-mounted sign shot",
+        "Wide cinematic scene shot",
+        "Wordmark spotlight shot",
+        "Zoomed texture detail shot"
+      ],
+      "camera-move": [
+        "360 orbit move",
+        "Arc around typography",
+        "Crane down reveal",
+        "Crane up reveal",
+        "Dolly in push",
+        "Dolly out pullback",
+        "Fast whip pan",
+        "Floating handheld drift",
+        "Gentle push-in",
+        "Hero reveal sweep",
+        "Locked-off static frame",
+        "Low glide tracking move",
+        "Lateral side track",
+        "Lens breathing subtle move",
+        "Parallax depth move",
+        "Quick snap zoom",
+        "Reverse dolly reveal",
+        "Rise and tilt move",
+        "Rotational sweep move",
+        "Shadow pass move",
+        "Slow cinematic drift",
+        "Slow orbit move",
+        "Smooth gimbal sweep",
+        "Snap tilt reveal",
+        "Steadicam pass",
+        "Top-down descend move",
+        "Tracking follow move",
+        "Truck left move",
+        "Truck right move"
+      ],
+      "lighting-style": [
+        "Ambient luxury glow",
+        "Backlit neon bloom",
+        "Beauty dish frontal light",
+        "Blue-hour ambient light",
+        "Butterfly glam lighting",
+        "Cinematic edge lighting",
+        "Clean ad-studio lighting",
+        "Color gel nightclub light",
+        "Commercial gloss lighting",
+        "Daylight fashion lighting",
+        "Dramatic key light",
+        "Editorial softbox lighting",
+        "Electric sign glow lighting",
+        "Firelit warm lighting",
+        "Golden hour luxury light",
+        "Hard spotlight lighting",
+        "High-contrast cinema lighting",
+        "Holographic reflective lighting",
+        "Icy cool lighting",
+        "Luminous billboard light",
+        "Moody rim lighting",
+        "Neon rim lighting",
+        "Pastel diffusion lighting",
+        "Practical city light glow",
+        "Rainbow reflective lighting",
+        "Soft glam lighting",
+        "Split lighting drama",
+        "Sunset backlight",
+        "Volumetric haze lighting"
+      ],
+      "shadow-style": [
+        "Airbrushed soft shadows",
+        "Bold cutout shadows",
+        "Commercial clean shadows",
+        "Cracked texture shadows",
+        "Crisp studio shadows",
+        "Deep noir shadows",
+        "Diffuse dreamy shadows",
+        "Directional hard shadows",
+        "Dramatic floor shadows",
+        "Editorial balanced shadows",
+        "Elongated cinematic shadows",
+        "Feathered shadows",
+        "Glowing shadow edges",
+        "Graphic poster shadows",
+        "Heavy contrast shadows",
+        "High-noon sharp shadows",
+        "Layered depth shadows",
+        "Low ambient shadows",
+        "Moody sculpted shadows",
+        "Neon-tinted shadows",
+        "No visible shadows",
+        "Reflective mirrored shadows",
+        "Rim-defined shadows",
+        "Shadow pattern gobo effect",
+        "Silky luxury shadows",
+        "Smoky atmospheric shadows",
+        "Soft wrapped shadows",
+        "Split shadow drama",
+        "Underlight shadow creep"
+      ],
+      "color-palette": [
+        "Acid green and electric blue",
+        "Aqua and gold luxury",
+        "Black and chrome silver",
+        "Black and gold glam",
+        "Blue, pink, and violet neon",
+        "Burgundy and champagne",
+        "Candy rainbow gloss",
+        "Cherry red and black",
+        "Coral, peach, and gold",
+        "Crimson and metallic gold",
+        "Deep teal and silver",
+        "Emerald and black luxe",
+        "Gold and ivory elegance",
+        "Hot pink and cyan glow",
+        "Ice blue and platinum",
+        "Lavender and pearl",
+        "Lime and cobalt pop",
+        "Midnight blue and violet",
+        "Mocha and cream",
+        "Monochrome black and white",
+        "Orange, pink, and gold sunset",
+        "Pastel rainbow dream",
+        "Purple and fuchsia glam",
+        "Red, cream, and black",
+        "Rose gold and blush",
+        "Royal blue and gold",
+        "Silver, white, and glass",
+        "Turquoise and magenta",
+        "Warm bronze and amber"
+      ],
+      "aspect-ratio": [
+        "1:1 square",
+        "16:9 widescreen",
+        "2:3 poster",
+        "21:9 cinematic",
+        "3:2 landscape",
+        "3:4 portrait",
+        "4:5 portrait",
+        "5:4 landscape",
+        "9:16 vertical"
+      ],
+      "motion-style": [
+        "Billowing light motion",
+        "Bold freeze-frame energy",
+        "Bursting sparkle motion",
+        "Calm poised stillness",
+        "Cinematic slow-motion drama",
+        "Crackling electric motion",
+        "Dripping liquid motion",
+        "Fast reveal energy",
+        "Floating graceful motion",
+        "Gliding luxury movement",
+        "Glow pulse motion",
+        "Heroic reveal motion",
+        "Holographic shimmer motion",
+        "Lightning-charged motion",
+        "Marquee flash rhythm",
+        "Neon pulse motion",
+        "Playful bouncy energy",
+        "Poster-impact stillness",
+        "Rain-swept motion",
+        "Rotational spin energy",
+        "Slow regal reveal",
+        "Smooth glossy drift",
+        "Sparkle-trail motion",
+        "Street swagger motion",
+        "Subtle breathing realism",
+        "Surreal floating motion",
+        "Suspenseful slow drift",
+        "Whip-turn energy",
+        "Windblown cinematic motion"
+      ],
+      "detail-boost": [
+        "8K premium ad detail",
+        "Airbrushed poster polish",
+        "Billboard-scale polish",
+        "Cinematic realism boost",
+        "Crisp edge enhancement",
+        "Deep texture realism",
+        "Editorial luxury sharpness",
+        "Extra bevel detail",
+        "Extra gloss reflections",
+        "Gem and sparkle detailing",
+        "High dynamic contrast",
+        "Hyperreal surface detail",
+        "Illustrative clean finish",
+        "Lens flare sparkle detail",
+        "Magazine-grade retouch quality",
+        "Metal and chrome realism",
+        "Micro-detail lighting polish",
+        "Painterly realism blend",
+        "Poster-ready finish",
+        "Product-shot refinement",
+        "Refined color separation",
+        "Reflective surface realism",
+        "Shadow depth enhancement",
+        "Spray texture detail",
+        "Studio-grade detail",
+        "Texture and crack detail",
+        "Ultra clean luxury finish",
+        "Ultra polished render",
+        "Wet-look highlight detail"
+      ]
+    };
+
+    const presetNames = [
+      "Acid Alley Graffiti",
+      "Aurora Royal Script",
+      "Chrome Night Rebel",
+      "Crimson Crown King",
+      "Diamond Marquee Luxe",
+      "Electric Wall Jukkat",
+      "Fantasy Creature Pop Type",
+      "Fonts Chrome Neon",
+      "Golden Palace Serif",
+      "Holographic Bubble Pop",
+      "Ice Luxury Wordmark",
+      "Midnight Noir Logo",
+      "Neon Street Script",
+      "Surfyre Rainbow Bubble",
+      "Velvet Royal Vision"
+    ];
+
+    const presets = {
+      "Acid Alley Graffiti": {
+        "typography-style": "Neon tube letters (glowing lights)",
+        "letter-structure": "Angular graffiti cuts",
+        "surface-finish": "Airbrushed glossy paint",
+        "aesthetic-style": "Electric street-art luxe",
+        "text-effect": "Graffiti splatter effect",
+        "text-layout": "Diagonal slant layout",
+        "decor-extras": "Urban spray bursts",
+        "outline-style": "Thick graffiti outline",
+        "background-environment": "Electric alley mural wall",
+        "camera-angle": "Diagonal dynamic tilt",
+        "camera-lens": "35mm editorial lens",
+        "shot-type": "Street mural shot",
+        "camera-move": "Tracking follow move",
+        "lighting-style": "Electric sign glow lighting",
+        "shadow-style": "Graphic poster shadows",
+        "color-palette": "Acid green and electric blue",
+        "aspect-ratio": "1:1 square",
+        "motion-style": "Street swagger motion",
+        "detail-boost": "Poster-ready finish"
+      },
+      "Aurora Royal Script": {
+        "typography-style": "Gold letters (shiny precious metal)",
+        "letter-structure": "Curved script flourishes",
+        "surface-finish": "Gold leaf finish",
+        "aesthetic-style": "Regal queen-core mood",
+        "text-effect": "Soft glow effect",
+        "text-layout": "Centered logo lockup",
+        "decor-extras": "Filigree luxury curls",
+        "outline-style": "Thin luxury pinline",
+        "background-environment": "Aurora-lit skyline backdrop",
+        "camera-angle": "Slight upward angle",
+        "camera-lens": "85mm beauty lens",
+        "shot-type": "Hero poster composition",
+        "camera-move": "Slow cinematic drift",
+        "lighting-style": "Volumetric haze lighting",
+        "shadow-style": "Diffuse dreamy shadows",
+        "color-palette": "Lavender and pearl",
+        "aspect-ratio": "4:5 portrait",
+        "motion-style": "Slow regal reveal",
+        "detail-boost": "Editorial luxury sharpness"
+      },
+      "Chrome Night Rebel": {
+        "typography-style": "Chrome letters (mirror metal)",
+        "letter-structure": "Fluid handstyle lettering",
+        "surface-finish": "Chrome mirror finish",
+        "aesthetic-style": "Liquid chrome drama",
+        "text-effect": "Mirror shine effect",
+        "text-layout": "Horizontal wordmark layout",
+        "decor-extras": "Neon streak trails",
+        "outline-style": "Chrome edge trim",
+        "background-environment": "Rain-soaked neon street",
+        "camera-angle": "Crowd-level upward angle",
+        "camera-lens": "40mm natural perspective lens",
+        "shot-type": "Wide cinematic scene shot",
+        "camera-move": "Smooth gimbal sweep",
+        "lighting-style": "Backlit neon bloom",
+        "shadow-style": "Deep noir shadows",
+        "color-palette": "Black and chrome silver",
+        "aspect-ratio": "16:9 widescreen",
+        "motion-style": "Whip-turn energy",
+        "detail-boost": "Metal and chrome realism"
+      },
+      "Crimson Crown King": {
+        "typography-style": "Concrete letters (rough cement)",
+        "letter-structure": "Sharp gothic angles",
+        "surface-finish": "Enamel luxury coating",
+        "aesthetic-style": "Luxury pop-art",
+        "text-effect": "Beveled emboss effect",
+        "text-layout": "Single word hero layout",
+        "decor-extras": "Crown topper detail",
+        "outline-style": "Thick graffiti outline",
+        "background-environment": "Plaster wall with texture",
+        "camera-angle": "Front-facing hero angle",
+        "camera-lens": "50mm prime lens",
+        "shot-type": "Poster-ready centered shot",
+        "camera-move": "Locked-off static frame",
+        "lighting-style": "Dramatic key light",
+        "shadow-style": "Heavy contrast shadows",
+        "color-palette": "Crimson and metallic gold",
+        "aspect-ratio": "1:1 square",
+        "motion-style": "Bold freeze-frame energy",
+        "detail-boost": "Billboard-scale polish"
+      },
+      "Diamond Marquee Luxe": {
+        "typography-style": "Diamond letters (faceted crystal)",
+        "letter-structure": "Bold stacked display letters",
+        "surface-finish": "Rhinestone encrusted finish",
+        "aesthetic-style": "High-fashion commercial",
+        "text-effect": "Marquee bulb effect",
+        "text-layout": "Badge emblem layout",
+        "decor-extras": "Marquee bulbs",
+        "outline-style": "Luxury beveled contour",
+        "background-environment": "Diamond vault interior",
+        "camera-angle": "Straight-on centered angle",
+        "camera-lens": "Commercial product lens",
+        "shot-type": "Marquee sign shot",
+        "camera-move": "Gentle push-in",
+        "lighting-style": "Commercial gloss lighting",
+        "shadow-style": "Silky luxury shadows",
+        "color-palette": "Silver, white, and glass",
+        "aspect-ratio": "4:5 portrait",
+        "motion-style": "Glow pulse motion",
+        "detail-boost": "Gem and sparkle detailing"
+      },
+      "Electric Wall Jukkat": {
+        "typography-style": "Neon tube letters (glowing lights)",
+        "letter-structure": "Angular graffiti cuts",
+        "surface-finish": "Graffiti spray texture",
+        "aesthetic-style": "Electric street-art luxe",
+        "text-effect": "Electric pulse effect",
+        "text-layout": "Horizontal wordmark layout",
+        "decor-extras": "Electric lightning bolts",
+        "outline-style": "Electric neon outline",
+        "background-environment": "Blue neon brick wall",
+        "camera-angle": "Straight-on centered angle",
+        "camera-lens": "28mm cinematic lens",
+        "shot-type": "Street mural shot",
+        "camera-move": "Lateral side track",
+        "lighting-style": "Neon rim lighting",
+        "shadow-style": "Neon-tinted shadows",
+        "color-palette": "Acid green and electric blue",
+        "aspect-ratio": "1:1 square",
+        "motion-style": "Crackling electric motion",
+        "detail-boost": "Ultra polished render"
+      },
+      "Fantasy Creature Pop Type": {
+        "typography-style": "Slime letters (glossy stretchy goo)",
+        "letter-structure": "Fat inflated letterforms",
+        "surface-finish": "Gel wet shine finish",
+        "aesthetic-style": "Glossy horror-pop",
+        "text-effect": "Dripping melt effect",
+        "text-layout": "Stacked vertical layout",
+        "decor-extras": "Winged fantasy accents",
+        "outline-style": "Contour shadow edge",
+        "background-environment": "Plaster wall with texture",
+        "camera-angle": "Slight downward commercial angle",
+        "camera-lens": "35mm editorial lens",
+        "shot-type": "Stacked layered composition shot",
+        "camera-move": "Slow orbit move",
+        "lighting-style": "Moody rim lighting",
+        "shadow-style": "Moody sculpted shadows",
+        "color-palette": "Red, cream, and black",
+        "aspect-ratio": "4:5 portrait",
+        "motion-style": "Dripping liquid motion",
+        "detail-boost": "Deep texture realism"
+      },
+      "Fonts Chrome Neon": {
+        "typography-style": "Chrome letters (mirror metal)",
+        "letter-structure": "Wrapped underline swooshes",
+        "surface-finish": "Liquid mercury chrome",
+        "aesthetic-style": "Liquid chrome drama",
+        "text-effect": "Neon halo effect",
+        "text-layout": "Horizontal wordmark layout",
+        "decor-extras": "Swirling underline swooshes",
+        "outline-style": "Chrome edge trim",
+        "background-environment": "Cracked concrete street wall",
+        "camera-angle": "Front-facing hero angle",
+        "camera-lens": "Commercial product lens",
+        "shot-type": "Poster-ready centered shot",
+        "camera-move": "Locked-off static frame",
+        "lighting-style": "Neon rim lighting",
+        "shadow-style": "Crisp studio shadows",
+        "color-palette": "Blue, pink, and violet neon",
+        "aspect-ratio": "9:16 vertical",
+        "motion-style": "Neon pulse motion",
+        "detail-boost": "Reflective surface realism"
+      },
+      "Golden Palace Serif": {
+        "typography-style": "Gold letters (shiny precious metal)",
+        "letter-structure": "Ornamental serif construction",
+        "surface-finish": "Gold leaf finish",
+        "aesthetic-style": "Old-money elegance",
+        "text-effect": "Beveled emboss effect",
+        "text-layout": "Badge emblem layout",
+        "decor-extras": "Wrapped ornament flourishes",
+        "outline-style": "Thin luxury pinline",
+        "background-environment": "Grand royal hall",
+        "camera-angle": "Symmetrical head-on angle",
+        "camera-lens": "85mm beauty lens",
+        "shot-type": "Magazine-cover composition",
+        "camera-move": "Gentle push-in",
+        "lighting-style": "Golden hour luxury light",
+        "shadow-style": "Editorial balanced shadows",
+        "color-palette": "Gold and ivory elegance",
+        "aspect-ratio": "4:5 portrait",
+        "motion-style": "Calm poised stillness",
+        "detail-boost": "Magazine-grade retouch quality"
+      },
+      "Holographic Bubble Pop": {
+        "typography-style": "Inflated bubble letters (3D puffy)",
+        "letter-structure": "Bubble round forms",
+        "surface-finish": "Holographic rainbow sheen",
+        "aesthetic-style": "Sticker-art pop",
+        "text-effect": "Inflated puff effect",
+        "text-layout": "Sticker decal layout",
+        "decor-extras": "Sparkle starbursts",
+        "outline-style": "Sticker white border",
+        "background-environment": "Candy gradient studio wall",
+        "camera-angle": "Close eye-level angle",
+        "camera-lens": "50mm prime lens",
+        "shot-type": "Cover-style composition",
+        "camera-move": "Slow cinematic drift",
+        "lighting-style": "Pastel diffusion lighting",
+        "shadow-style": "Airbrushed soft shadows",
+        "color-palette": "Pastel rainbow dream",
+        "aspect-ratio": "1:1 square",
+        "motion-style": "Playful bouncy energy",
+        "detail-boost": "Airbrushed poster polish"
+      },
+      "Ice Luxury Wordmark": {
+        "typography-style": "Ice letters (frozen crystals)",
+        "letter-structure": "Geometric modular letters",
+        "surface-finish": "Silver foil finish",
+        "aesthetic-style": "Icy platinum elegance",
+        "text-effect": "Frost edge effect",
+        "text-layout": "Minimal centered layout",
+        "decor-extras": "Crystal shard accents",
+        "outline-style": "Reflective metallic edge",
+        "background-environment": "Holographic mirror room",
+        "camera-angle": "Top-front angle",
+        "camera-lens": "90mm fashion lens",
+        "shot-type": "Close texture shot",
+        "camera-move": "Gentle push-in",
+        "lighting-style": "Icy cool lighting",
+        "shadow-style": "Feathered shadows",
+        "color-palette": "Ice blue and platinum",
+        "aspect-ratio": "3:4 portrait",
+        "motion-style": "Subtle breathing realism",
+        "detail-boost": "Hyperreal surface detail"
+      },
+      "Midnight Noir Logo": {
+        "typography-style": "Steel letters (industrial metal)",
+        "letter-structure": "Beveled block structure",
+        "surface-finish": "Brushed metal texture",
+        "aesthetic-style": "Midnight noir polish",
+        "text-effect": "Shadow depth effect",
+        "text-layout": "Centered logo lockup",
+        "decor-extras": "Smoke wisps",
+        "outline-style": "Dark comic outline",
+        "background-environment": "Moonlit balcony backdrop",
+        "camera-angle": "Profile side angle",
+        "camera-lens": "70mm compression lens",
+        "shot-type": "Logo reveal composition",
+        "camera-move": "Slow cinematic drift",
+        "lighting-style": "Split lighting drama",
+        "shadow-style": "Deep noir shadows",
+        "color-palette": "Midnight blue and violet",
+        "aspect-ratio": "16:9 widescreen",
+        "motion-style": "Suspenseful slow drift",
+        "detail-boost": "High dynamic contrast"
+      },
+      "Neon Street Script": {
+        "typography-style": "LED letters (bright digital pixels)",
+        "letter-structure": "Curved script flourishes",
+        "surface-finish": "Neon tube glow surface",
+        "aesthetic-style": "Neon nightclub shine",
+        "text-effect": "Glow halo effect",
+        "text-layout": "Wide cinematic layout",
+        "decor-extras": "Glow particles",
+        "outline-style": "Glow halo outline",
+        "background-environment": "City rooftop at night",
+        "camera-angle": "Low runway angle",
+        "camera-lens": "35mm editorial lens",
+        "shot-type": "Wall-mounted sign shot",
+        "camera-move": "Steadicam pass",
+        "lighting-style": "Color gel nightclub light",
+        "shadow-style": "Neon-tinted shadows",
+        "color-palette": "Hot pink and cyan glow",
+        "aspect-ratio": "16:9 widescreen",
+        "motion-style": "Glow pulse motion",
+        "detail-boost": "Lens flare sparkle detail"
+      },
+      "Surfyre Rainbow Bubble": {
+        "typography-style": "Bubblegum letters (shiny pink spheres)",
+        "letter-structure": "Chunky rounded forms",
+        "surface-finish": "Glossy plastic vinyl",
+        "aesthetic-style": "Sticker-art pop",
+        "text-effect": "Wet gloss effect",
+        "text-layout": "Sticker decal layout",
+        "decor-extras": "Wet drips",
+        "outline-style": "Bold black sticker edge",
+        "background-environment": "White studio infinity wall",
+        "camera-angle": "Straight-on centered angle",
+        "camera-lens": "Commercial product lens",
+        "shot-type": "Sticker-cut composition shot",
+        "camera-move": "Locked-off static frame",
+        "lighting-style": "Commercial gloss lighting",
+        "shadow-style": "Bold cutout shadows",
+        "color-palette": "Candy rainbow gloss",
+        "aspect-ratio": "1:1 square",
+        "motion-style": "Dripping liquid motion",
+        "detail-boost": "Extra gloss reflections"
+      },
+      "Velvet Royal Vision": {
+        "typography-style": "Velvet letters (luxury fabric)",
+        "letter-structure": "Decorative old-English structure",
+        "surface-finish": "Embossed metallic finish",
+        "aesthetic-style": "Baroque glam",
+        "text-effect": "Soft glow effect",
+        "text-layout": "Shield crest layout",
+        "decor-extras": "Filigree luxury curls",
+        "outline-style": "Double rim outline",
+        "background-environment": "Luxury dressing room wall",
+        "camera-angle": "High angle beauty shot",
+        "camera-lens": "85mm beauty lens",
+        "shot-type": "Magazine-cover composition",
+        "camera-move": "Gentle push-in",
+        "lighting-style": "Editorial softbox lighting",
+        "shadow-style": "Silky luxury shadows",
+        "color-palette": "Burgundy and champagne",
+        "aspect-ratio": "4:5 portrait",
+        "motion-style": "Floating graceful motion",
+        "detail-boost": "Studio-grade detail"
+      }
+    };
+
+    function alphaNoneList(arr) {
+      return ["None", ...arr.slice().sort((a, b) => a.localeCompare(b))];
+    }
+
+    function populateSelect(selectId, arr) {
+      const select = document.getElementById(selectId);
+      const list = alphaNoneList(arr);
+      select.innerHTML = list.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+    }
+
+    function populateGroupedTypographySelect() {
+      const select = document.getElementById("typography-style");
+      let html = `<option value="None">None</option>`;
+
+      Object.entries(groupedTypographyStyles).forEach(([group, items]) => {
+        const sorted = items.slice().sort((a, b) => a.localeCompare(b));
+        html += `<optgroup label="${escapeHtml(group)}">`;
+        sorted.forEach(item => {
+          html += `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`;
+        });
+        html += `</optgroup>`;
+      });
+
+      select.innerHTML = html;
+    }
+
+    function populatePresetSelect() {
+      const select = document.getElementById("style-preset");
+      const list = ["None", ...presetNames.slice().sort((a, b) => a.localeCompare(b))];
+      select.innerHTML = list.map(item => `<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("");
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function applyPreset(name) {
+      if (!name || name === "None") return;
+      const preset = presets[name];
+      if (!preset) return;
+      for (const [id, value] of Object.entries(preset)) {
+        if (lockedFields.has(id)) continue;
+        const el = document.getElementById(id);
+        if (el) el.value = value;
+      }
+    }
+
+    function randomFromSelect(selectId) {
+      if (lockedFields.has(selectId)) return;
+      const el = document.getElementById(selectId);
+      if (!el || el.options.length <= 1) return;
+      const idx = Math.floor(Math.random() * (el.options.length - 1)) + 1;
+      el.selectedIndex = idx;
+    }
+
+    function saveLockedFields() {
+      try {
+        localStorage.setItem(LOCK_STORAGE_KEY, JSON.stringify(Array.from(lockedFields)));
+      } catch (error) {
+        console.warn("Unable to save locked fields.", error);
+      }
+    }
+
+    function loadLockedFields() {
+      try {
+        const raw = localStorage.getItem(LOCK_STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return;
+        parsed.forEach((fieldId) => {
+          if (lockableFieldIds.includes(fieldId)) lockedFields.add(fieldId);
+        });
+      } catch (error) {
+        console.warn("Unable to load locked fields.", error);
+      }
+    }
+    const STORAGE_KEY = "glamTypographyHistory";
+    const generatedHistory = [];
+
+    const presetFamilies = {
+      luxe: ["Aurora Royal Script", "Diamond Marquee Luxe", "Golden Palace Serif", "Ice Luxury Wordmark", "Velvet Royal Vision"],
+      neon: ["Acid Alley Graffiti", "Chrome Night Rebel", "Electric Wall Jukkat", "Fonts Chrome Neon", "Neon Street Script"],
+      playful: ["Fantasy Creature Pop Type", "Holographic Bubble Pop", "Surfyre Rainbow Bubble"],
+      dark: ["Crimson Crown King", "Midnight Noir Logo"]
+    };
+
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      toast.classList.add("toast-show");
+      clearTimeout(showToast._timer);
+      showToast._timer = setTimeout(() => {
+        toast.classList.add("hidden");
+      }, 2200);
+    }
+
+    function setCopyButtonsState(enabled) {
+      [
+        "copy-photo-btn",
+        "copy-video-btn",
+        "copy-both-btn-top",
+        "copy-both-btn-bottom",
+        "download-photo-btn",
+        "download-video-btn",
+        "download-both-btn",
+        "copy-jingle-btn",
+        "download-jingle-btn",
+        "copy-variations-btn",
+        "copy-marketing-btn"
+      ].forEach(id => {
+        const btn = document.getElementById(id);
+        if (!btn) return;
+        btn.disabled = !enabled;
+        btn.style.opacity = enabled ? "1" : ".55";
+        btn.style.cursor = enabled ? "pointer" : "not-allowed";
+      });
+    }
+
+    function getRandomFamilyName() {
+      const keys = Object.keys(presetFamilies);
+      return keys[Math.floor(Math.random() * keys.length)];
+    }
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function randomFromOptions(selectId, options) {
+      if (lockedFields.has(selectId)) return;
+      const el = document.getElementById(selectId);
+      if (!el || !options || !options.length) return;
+      const valid = options.filter(option => [...el.options].some(o => o.value === option));
+      if (!valid.length) return randomFromSelect(selectId);
+      el.value = pickRandom(valid);
+    }
+
+    function syncFamilySelections(familyName) {
+      const familyMaps = {
+        luxe: {
+          "aesthetic-style": ["Baroque glam", "High-fashion commercial", "Old-money elegance", "Regal queen-core mood"],
+          "lighting-style": ["Butterfly glam lighting", "Commercial gloss lighting", "Editorial softbox lighting", "Golden hour luxury light", "Soft glam lighting"],
+          "shadow-style": ["Editorial balanced shadows", "Silky luxury shadows", "Soft wrapped shadows"],
+          "background-environment": ["Black marble luxury set", "Diamond vault interior", "Grand royal hall", "High-end penthouse backdrop", "Luxury dressing room wall"],
+          "motion-style": ["Calm poised stillness", "Floating graceful motion", "Slow regal reveal", "Smooth glossy drift"]
+        },
+        neon: {
+          "aesthetic-style": ["Cyber neon beauty", "Electric street-art luxe", "Liquid chrome drama", "Neon nightclub shine"],
+          "lighting-style": ["Backlit neon bloom", "Color gel nightclub light", "Electric sign glow lighting", "Neon rim lighting"],
+          "shadow-style": ["Deep noir shadows", "Graphic poster shadows", "Neon-tinted shadows"],
+          "background-environment": ["Blue neon brick wall", "City rooftop at night", "Electric alley mural wall", "Rain-soaked neon street"],
+          "motion-style": ["Crackling electric motion", "Fast reveal energy", "Neon pulse motion", "Street swagger motion", "Whip-turn energy"]
+        },
+        playful: {
+          "aesthetic-style": ["Candy pop fantasy", "Glossy horror-pop", "Luxury pop-art", "Sticker-art pop"],
+          "lighting-style": ["Commercial gloss lighting", "Pastel diffusion lighting", "Rainbow reflective lighting", "Soft glam lighting"],
+          "shadow-style": ["Airbrushed soft shadows", "Bold cutout shadows", "Diffuse dreamy shadows"],
+          "background-environment": ["Candy gradient studio wall", "Pastel cloud gradient", "White studio infinity wall"],
+          "motion-style": ["Bursting sparkle motion", "Dripping liquid motion", "Playful bouncy energy", "Surreal floating motion"]
+        },
+        dark: {
+          "aesthetic-style": ["Dark opulent mood", "Midnight noir polish", "Liquid chrome drama"],
+          "lighting-style": ["Cinematic edge lighting", "Dramatic key light", "Hard spotlight lighting", "Split lighting drama"],
+          "shadow-style": ["Deep noir shadows", "Heavy contrast shadows", "Moody sculpted shadows", "Split shadow drama"],
+          "background-environment": ["Dark studio spotlight room", "Moonlit balcony backdrop", "Plaster wall with texture"],
+          "motion-style": ["Bold freeze-frame energy", "Suspenseful slow drift", "Windblown cinematic motion"]
+        }
+      };
+
+      const map = familyMaps[familyName];
+      if (!map) return;
+      Object.entries(map).forEach(([id, options]) => randomFromOptions(id, options));
+    }
+
+    function buildCaptionIdeas(mainText) {
+      return [
+        `This ${mainText} concept is giving premium campaign energy.`,
+        `Turn one word into a whole luxury visual story: ${mainText}.`,
+        `This is what happens when typography stops playing small. ${mainText}.`
+      ];
+    }
+
+    function buildProductIdeas(mainText) {
+      return [
+        `Sell it as a prompt pack built around the word “${mainText}.”`,
+        `Use it as a reel teaser for a typography bundle or template drop.`,
+        `Turn this look into a product cover, mockup scene, or promo poster.`
+      ];
+    }
+
+    function renderSuggestions(mainText) {
+      document.getElementById("caption-suggestions").innerHTML = buildCaptionIdeas(mainText)
+        .map((item, index) => `<p><strong>${index + 1}.</strong> ${escapeHtml(item)}</p>`).join("");
+      document.getElementById("product-suggestions").innerHTML = buildProductIdeas(mainText)
+        .map((item, index) => `<p><strong>${index + 1}.</strong> ${escapeHtml(item)}</p>`).join("");
+    }
+
+    function buildJinglePrompt(mainText) {
+      const action = document.getElementById("story-action").value.trim() || "a premium typography reveal";
+      const preset = document.getElementById("style-preset").value;
+      const aesthetic = compactValue("aesthetic-style") || "High-fashion commercial";
+      const palette = compactValue("color-palette") || "Black and gold glam";
+      const motion = compactValue("motion-style") || "Glow pulse motion";
+      return [
+        `Write a catchy short promo jingle and a one-minute song concept inspired by the word "${mainText}".`,
+        `Creative direction: ${action}.`,
+        `Visual vibe: ${aesthetic.toLowerCase()}.`,
+        `Color mood: ${palette.toLowerCase()}.`,
+        `Energy: ${motion.toLowerCase()}.`,
+        `Preset influence: ${(preset && preset !== "None") ? preset : "custom glam build"}.`,
+        `Give me 3 sections in one output:`,
+        `1. A 30-second jingle prompt with hook, mood, sonic texture, and chant idea.`,
+        `2. A 1-minute song prompt with verse, hook, attitude, and production style.`,
+        `3. Suggested weirdness %, style influence %, and audio influence % settings I can tweak.`,
+        `Keep it bold, catchy, commercial, easy to sing, and built for a luxury promo around the word "${mainText}".`
+      ].join(" ");
+    }
+
+    function renderJinglePrompt(mainText) {
+      document.getElementById("jingle-output").textContent = buildJinglePrompt(mainText);
+    }
+
+    function buildWebsiteCTA(mainText) {
+      return [
+        `Turn "${mainText}" into a scroll-stopping visual in minutes.`,
+        `Use this glam generator to build premium prompts, create your content fast, and bring people straight to your offer.`,
+        `Click in, customize your look, generate the prompt, and grab your next bestseller vibe.`
+      ];
+    }
+
+    function buildSalesCopy(mainText) {
+      const action = document.getElementById("story-action").value.trim() || "premium typography reveal";
+      const aesthetic = compactValue("aesthetic-style") || "High-fashion commercial";
+      return [
+        `The ${mainText} prompt setup was built for creators who want fast luxury results without guessing what to type.`,
+        `It blends ${aesthetic.toLowerCase()} direction with a ${action} vibe so your content feels polished, modern, and ready to sell.`,
+        `Use it for product covers, mockups, social posts, promos, bundles, and high-end digital product branding.`
+      ];
+    }
+
+    function buildPromoAngles(mainText) {
+      return [
+        `Lead with speed: go from idea to premium prompt for ${mainText} without staring at a blank screen.`,
+        `Lead with visuals: use ${mainText} as the hero concept for a bundle cover, reel teaser, or landing page graphic.`,
+        `Lead with value: position this generator as a shortcut for creators who want better prompts, faster content, and cleaner branding.`
+      ];
+    }
+
+    function renderMarketingPack(mainText) {
+      document.getElementById("website-cta-output").innerHTML = buildWebsiteCTA(mainText)
+        .map((item, index) => `<p><strong>${index + 1}.</strong> ${escapeHtml(item)}</p>`).join("");
+      document.getElementById("sales-copy-output").innerHTML = buildSalesCopy(mainText)
+        .map((item, index) => `<p><strong>${index + 1}.</strong> ${escapeHtml(item)}</p>`).join("");
+      document.getElementById("promo-angles-output").innerHTML = buildPromoAngles(mainText)
+        .map((item, index) => `<p><strong>${index + 1}.</strong> ${escapeHtml(item)}</p>`).join("");
+    }
+
+    function saveHistory() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(generatedHistory));
+      } catch (error) {
+        console.warn("Could not save prompt history.", error);
+      }
+    }
+
+    function loadHistory() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        const parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return;
+        generatedHistory.splice(0, generatedHistory.length, ...parsed.slice(0, 8));
+      } catch (error) {
+        console.warn("Could not load prompt history.", error);
+      }
+    }
+
+    function clearSavedHistory() {
+      generatedHistory.splice(0, generatedHistory.length);
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (error) {
+        console.warn("Could not clear prompt history.", error);
+      }
+      renderHistory();
+      showToast("Saved history cleared.");
+    }
+
+    function renderHistory() {
+      const target = document.getElementById("history-output");
+      if (!generatedHistory.length) {
+        target.innerHTML = '<p>No prompt history yet. Generate something gorgeous first.</p>';
+        return;
+      }
+      target.innerHTML = generatedHistory.slice(0, 5).map((item, index) => `
+        <div class="rounded-2xl p-3 mb-3" style="background: rgba(30,58,138,.05); border:1px solid rgba(212,175,55,.16);">
+          <p><strong>${index + 1}.</strong> ${escapeHtml(item.mainText)}</p>
+          <p class="text-xs text-gray-600 mt-1">${escapeHtml(item.preset || 'Custom build')} · ${escapeHtml(item.mode)}</p>
+        <div class="mt-6 overflow-hidden rounded-2xl border marquee-shell" style="border-color: rgba(212,175,55,.22); background: linear-gradient(90deg, rgba(255,255,255,.10), rgba(255,255,255,.04));">
+          <div class="marquee-track py-3">
+            <span class="marquee-text">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+            <span class="marquee-text" aria-hidden="true">✨ Fantasy 3D Word Art Prompt Generator • Premium Text Art Prompts • Bold Style • Luxury Detail • Instant Download ✨</span>
+          </div>
+        </div>
+        </div>
+      `).join("");
+    }
+
+    function downloadText(filename, content) {
+      const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function getSafeName(value) {
+      return (value || "glam-prompt").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+    }
+
+
+    function randomizeAll() {
+      const familyName = getRandomFamilyName();
+      const familyPresets = presetFamilies[familyName] || presetNames;
+      const chosenPreset = pickRandom(familyPresets);
+
+      if (!lockedFields.has("style-preset")) {
+        document.getElementById("style-preset").value = chosenPreset;
+      }
+      applyPreset(lockedFields.has("style-preset") ? document.getElementById("style-preset").value : chosenPreset);
+      syncFamilySelections(familyName);
+
+      randomFromSelect("letter-structure");
+      randomFromSelect("surface-finish");
+      randomFromSelect("text-effect");
+      randomFromSelect("text-layout");
+      randomFromSelect("decor-extras");
+      randomFromSelect("outline-style");
+      randomFromSelect("camera-angle");
+      randomFromSelect("camera-lens");
+      randomFromSelect("shot-type");
+      randomFromSelect("camera-move");
+      randomFromSelect("color-palette");
+      randomFromSelect("aspect-ratio");
+      randomFromSelect("detail-boost");
+
+      const textSeeds = [
+        "GLAM",
+        "KING",
+        "QUEEN ENERGY",
+        "NEON DRIP",
+        "SURFYRE",
+        "JUKKAT",
+        "BOSS MODE",
+        "ROYAL GLOW",
+        "ICON",
+        "LUXE"
+      ];
+
+      const actionSeeds = [
+        "chrome script glowing against a dramatic wall",
+        "graffiti letters pulsing with electric energy",
+        "bubble typography dripping with glossy color",
+        "royal lettering shining like a billboard",
+        "logo type revealing itself with cinematic polish",
+        "neon text shimmering in a luxury city scene",
+        "metallic wordmark reflecting dramatic light",
+        "sticker-style typography landing with bold impact",
+        "marquee letters sparkling with premium gloss",
+        "editorial type composition with rich depth"
+      ];
+
+      if (!document.getElementById("main-text").value.trim()) {
+        document.getElementById("main-text").value = pickRandom(textSeeds);
+      }
+      if (!document.getElementById("story-action").value.trim()) {
+        document.getElementById("story-action").value = pickRandom(actionSeeds);
+      }
+
+      showToast(`Fresh ${familyName} combo loaded.`);
+    }
+
+    function clearAll() {
+      document.getElementById("main-text").value = "";
+      document.getElementById("story-action").value = "";
+      document.getElementById("style-preset").value = "None";
+      fieldIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = "None";
+      });
+      document.querySelector('input[name="output-mode"][value="photo"]').checked = true;
+      document.getElementById("photo-output").textContent = "";
+      document.getElementById("video-output").textContent = "";
+      document.getElementById("caption-suggestions").innerHTML = "";
+      document.getElementById("product-suggestions").innerHTML = "";
+      document.getElementById("jingle-output").textContent = "";
+      document.getElementById("variations-output").textContent = "";
+      document.getElementById("variations-card").classList.add("hidden");
+      document.getElementById("website-cta-output").innerHTML = "";
+      document.getElementById("sales-copy-output").innerHTML = "";
+      document.getElementById("promo-angles-output").innerHTML = "";
+      document.getElementById("output-section").classList.add("hidden");
+      setCopyButtonsState(false);
+      renderHistory();
+      showToast("Generator reset.");
+    }
+
+    function getSelectedMode() {
+      return document.querySelector('input[name="output-mode"]:checked').value;
+    }
+
+    function compactValue(id) {
+      const v = document.getElementById(id).value;
+      return v && v !== "None" ? v : "";
+    }
+
+    function getAutoBackground(typographyStyle, aesthetic) {
+      const styleMap = {
+        "Chrome letters (mirror metal)": "a premium textured backdrop that makes reflective chrome lettering pop",
+        "Bubblegum letters (shiny pink spheres)": "a clean or graphic backdrop that makes the bubble letters stand out",
+        "Candle letters (wax + flame)": "a moody backdrop that supports glowing flame detail",
+        "Concrete letters (rough cement)": "a gritty urban backdrop that supports rough industrial lettering",
+        "Diamond letters (faceted crystal)": "a glamorous high-shine environment worthy of crystal lettering",
+        "Fur letters (fluffy strands)": "a soft luxe backdrop that supports tactile fluffy detail",
+        "Gold letters (shiny precious metal)": "a regal premium environment that supports rich metallic elegance",
+        "Ice letters (frozen crystals)": "a cool luminous environment that supports icy reflective detail",
+        "Inflated bubble letters (3D puffy)": "a bold graphic environment that supports playful inflated typography",
+        "LED letters (bright digital pixels)": "a futuristic or electric scene built for bright digital letter glow",
+        "Neon tube letters (glowing lights)": "an urban wall or nightlife scene that enhances neon signage",
+        "Slime letters (glossy stretchy goo)": "a surreal glossy environment that supports drippy slime textures",
+        "Velvet letters (luxury fabric)": "a plush editorial environment that supports rich textile detail",
+        "Water letters (liquid droplets)": "a reflective liquid-forward environment that supports glassy water detail"
+      };
+
+      const aestheticMap = {
+        "Baroque glam": "with rich elegance, ornate polish, and regal mood",
+        "Electric street-art luxe": "with gritty texture, spray energy, and bright urban impact",
+        "Glossy horror-pop": "with dramatic contrast, surreal texture, and dark glossy styling",
+        "High-fashion commercial": "with ad-quality clarity, controlled lighting, and premium presentation",
+        "Hyperreal typography art": "with dimensional realism, polished detail, and cinematic depth",
+        "Liquid chrome drama": "with reflective surfaces, moody depth, and polished metallic atmosphere",
+        "Sticker-art pop": "with clean separation, strong silhouette, and poster-ready graphic clarity"
+      };
+
+      const base = styleMap[typographyStyle] || "a background that naturally suits the typography style";
+      const flavor = aestheticMap[aesthetic] || "with styling that matches the chosen aesthetic";
+      return `${base}, ${flavor}`;
+    }
+
+    function buildPhotoPrompt() {
+      const mainText = document.getElementById("main-text").value.trim() || "GLAM";
+      const action = document.getElementById("story-action").value.trim() || "premium typography reveal";
+      const typographyStyle = compactValue("typography-style") || "Chrome letters (mirror metal)";
+      const letterStructure = compactValue("letter-structure") || "Geometric modular letters";
+      const surfaceFinish = compactValue("surface-finish") || "Chrome mirror finish";
+      const aesthetic = compactValue("aesthetic-style") || "Hyperreal typography art";
+      const textEffect = compactValue("text-effect");
+      const textLayout = compactValue("text-layout");
+      const decorExtras = compactValue("decor-extras");
+      const outlineStyle = compactValue("outline-style");
+      const background = compactValue("background-environment") || getAutoBackground(typographyStyle, aesthetic);
+      const cameraAngle = compactValue("camera-angle");
+      const cameraLens = compactValue("camera-lens");
+      const shotType = compactValue("shot-type");
+      const lighting = compactValue("lighting-style");
+      const shadow = compactValue("shadow-style");
+      const palette = compactValue("color-palette");
+      const ratio = compactValue("aspect-ratio");
+      const motion = compactValue("motion-style");
+      const detail = compactValue("detail-boost");
+
+      return [
+        `Create a premium typography artwork featuring the text "${mainText}".`,
+        `Font / object style: ${typographyStyle.toLowerCase()}.`,
+        `Letter structure: ${letterStructure.toLowerCase()}.`,
+        `Surface finish: ${surfaceFinish.toLowerCase()}.`,
+        `Overall aesthetic: ${aesthetic.toLowerCase()}.`,
+        textEffect ? `Text effect: ${textEffect.toLowerCase()}.` : "",
+        textLayout ? `Text layout: ${textLayout.toLowerCase()}.` : "",
+        decorExtras ? `Decor extras: ${decorExtras.toLowerCase()}.` : "",
+        outlineStyle ? `Outline style: ${outlineStyle.toLowerCase()}.` : "",
+        palette ? `Color palette: ${palette.toLowerCase()}.` : "",
+        ratio ? `Aspect ratio: ${ratio.toLowerCase()}.` : "",
+        `Scene direction: ${action}.`,
+        motion ? `Energy and motion feel: ${motion.toLowerCase()}.` : "",
+        cameraAngle ? `Camera angle: ${cameraAngle.toLowerCase()}.` : "",
+        cameraLens ? `Lens choice: ${cameraLens.toLowerCase()}.` : "",
+        shotType ? `Shot type: ${shotType.toLowerCase()}.` : "",
+        lighting ? `Lighting: ${lighting.toLowerCase()}.` : "",
+        shadow ? `Shadow design: ${shadow.toLowerCase()}.` : "",
+        `Background: ${background}.`,
+        detail ? `Detail boost: ${detail.toLowerCase()}.` : "",
+        `Render the typography as hyper-realistic, luxury-grade, cinematic 3D text with polished highlights, dimensional depth, sharp focus, rich texture, premium composition, clean edge separation, and 8K ad-quality finish.`
+      ].filter(Boolean).join(" ");
+    }
+
+    function buildVideoPrompt() {
+      const mainText = document.getElementById("main-text").value.trim() || "GLAM";
+      const action = document.getElementById("story-action").value.trim() || "premium typography reveal";
+      const typographyStyle = compactValue("typography-style") || "Chrome letters (mirror metal)";
+      const letterStructure = compactValue("letter-structure") || "Geometric modular letters";
+      const surfaceFinish = compactValue("surface-finish") || "Chrome mirror finish";
+      const aesthetic = compactValue("aesthetic-style") || "Hyperreal typography art";
+      const textEffect = compactValue("text-effect");
+      const textLayout = compactValue("text-layout");
+      const decorExtras = compactValue("decor-extras");
+      const outlineStyle = compactValue("outline-style");
+      const background = compactValue("background-environment") || getAutoBackground(typographyStyle, aesthetic);
+      const cameraAngle = compactValue("camera-angle");
+      const cameraLens = compactValue("camera-lens");
+      const shotType = compactValue("shot-type");
+      const cameraMove = compactValue("camera-move");
+      const lighting = compactValue("lighting-style");
+      const shadow = compactValue("shadow-style");
+      const palette = compactValue("color-palette");
+      const ratio = compactValue("aspect-ratio");
+      const motion = compactValue("motion-style");
+      const detail = compactValue("detail-boost");
+
+      return [
+        `Generate a cinematic video script prompt for premium typography featuring the text "${mainText}".`,
+        `Font / object style: ${typographyStyle.toLowerCase()}.`,
+        `Letter structure: ${letterStructure.toLowerCase()}.`,
+        `Surface finish: ${surfaceFinish.toLowerCase()}.`,
+        `Aesthetic direction: ${aesthetic.toLowerCase()}.`,
+        textEffect ? `Text effect: ${textEffect.toLowerCase()}.` : "",
+        textLayout ? `Text layout: ${textLayout.toLowerCase()}.` : "",
+        decorExtras ? `Decor extras: ${decorExtras.toLowerCase()}.` : "",
+        outlineStyle ? `Outline treatment: ${outlineStyle.toLowerCase()}.` : "",
+        palette ? `Color direction: ${palette.toLowerCase()}.` : "",
+        ratio ? `Aspect ratio target: ${ratio.toLowerCase()}.` : "",
+        `Primary action: ${action}.`,
+        motion ? `Motion style: ${motion.toLowerCase()}.` : "",
+        shotType ? `Shot plan: ${shotType.toLowerCase()}.` : "",
+        cameraAngle ? `Camera angle: ${cameraAngle.toLowerCase()}.` : "",
+        cameraLens ? `Lens look: ${cameraLens.toLowerCase()}.` : "",
+        cameraMove ? `Camera move: ${cameraMove.toLowerCase()}.` : "",
+        lighting ? `Lighting plan: ${lighting.toLowerCase()}.` : "",
+        shadow ? `Shadow treatment: ${shadow.toLowerCase()}.` : "",
+        `Background: ${background}.`,
+        detail ? `Visual detail target: ${detail.toLowerCase()}.` : "",
+        `Write the clip like a polished typography campaign scene with a clear opening reveal, a middle movement beat, and a final hero lockup. Keep the typography as the only subject, with premium pacing, cinematic framing, believable texture response, dramatic depth, and a high-end luxury finish.`
+      ].filter(Boolean).join(" ");
+    }
+
+    function generateOutputs() {
+      const mode = getSelectedMode();
+      const photoPrompt = buildPhotoPrompt();
+      const videoPrompt = buildVideoPrompt();
+      const mainText = document.getElementById("main-text").value.trim() || "GLAM";
+      const preset = document.getElementById("style-preset").value;
+
+      const outputSection = document.getElementById("output-section");
+      const photoCard = document.getElementById("photo-card");
+      const videoCard = document.getElementById("video-card");
+
+      document.getElementById("photo-output").textContent = photoPrompt;
+      document.getElementById("video-output").textContent = videoPrompt;
+
+      outputSection.classList.remove("hidden");
+
+      if (mode === "photo") {
+        photoCard.style.display = "block";
+        videoCard.style.display = "none";
+      } else if (mode === "video") {
+        photoCard.style.display = "none";
+        videoCard.style.display = "block";
+      } else {
+        photoCard.style.display = "block";
+        videoCard.style.display = "block";
+      }
+
+      generatedHistory.unshift({ mainText, preset: preset === "None" ? "Custom build" : preset, mode });
+      if (generatedHistory.length > 8) generatedHistory.length = 8;
+      saveHistory();
+      renderSuggestions(mainText);
+      renderJinglePrompt(mainText);
+      renderMarketingPack(mainText);
+      renderHistory();
+      setCopyButtonsState(true);
+      showToast("Prompts generated.");
+
+      setTimeout(() => {
+        outputSection.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }, 80);
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.style.position = "fixed";
+        ta.style.left = "-999999px";
+        document.body.appendChild(ta);
+        ta.focus();
+        ta.select();
+        document.execCommand("copy");
+        document.body.removeChild(ta);
+        return true;
+      }
+    }
+
+    async function copyPhoto() {
+      const text = document.getElementById("photo-output").textContent.trim();
+      if (!text) return showToast("Generate a prompt first.");
+      await copyText(text);
+      showToast("Photo prompt copied.");
+    }
+
+    async function copyVideo() {
+      const text = document.getElementById("video-output").textContent.trim();
+      if (!text) return showToast("Generate a prompt first.");
+      await copyText(text);
+      showToast("Video prompt copied.");
+    }
+
+    async function copyBoth() {
+      const photo = document.getElementById("photo-output").textContent.trim();
+      const video = document.getElementById("video-output").textContent.trim();
+      const combined = [`PHOTO PROMPT:\n${photo}`, `VIDEO SCRIPT PROMPT:\n${video}`].join("\n\n");
+      if (!(photo || video)) return showToast("Generate a prompt first.");
+      await copyText(combined);
+      showToast("Both outputs copied.");
+    }
+
+    function downloadPhoto() {
+      const text = document.getElementById("photo-output").textContent.trim();
+      if (!text) return showToast("Generate a prompt first.");
+      downloadText(`${getSafeName(document.getElementById("main-text").value)}-photo-prompt.txt`, text);
+      showToast("Photo prompt downloaded.");
+    }
+
+    function downloadVideo() {
+      const text = document.getElementById("video-output").textContent.trim();
+      if (!text) return showToast("Generate a prompt first.");
+      downloadText(`${getSafeName(document.getElementById("main-text").value)}-video-prompt.txt`, text);
+      showToast("Video prompt downloaded.");
+    }
+
+    function downloadBoth() {
+      const photo = document.getElementById("photo-output").textContent.trim();
+      const video = document.getElementById("video-output").textContent.trim();
+      const combined = [`PHOTO PROMPT:\n${photo}`, `VIDEO SCRIPT PROMPT:\n${video}`].join("\n\n");
+      if (!(photo || video)) return showToast("Generate a prompt first.");
+      downloadText(`${getSafeName(document.getElementById("main-text").value)}-both-prompts.txt`, combined);
+      showToast("Both prompts downloaded.");
+    }
+
+    async function copyJingle() {
+      const text = document.getElementById("jingle-output").textContent.trim();
+      if (!text) return showToast("Generate a prompt first.");
+      await copyText(text);
+      showToast("Jingle prompt copied.");
+    }
+
+    function downloadJingle() {
+      const text = document.getElementById("jingle-output").textContent.trim();
+      if (!text) return showToast("Generate a prompt first.");
+      downloadText(`${getSafeName(document.getElementById("main-text").value)}-jingle-prompt.txt`, text);
+      showToast("Jingle prompt downloaded.");
+    }
+
+    function buildVariationPrompt(index) {
+      const mainText = document.getElementById("main-text").value.trim() || "GLAM";
+      const action = document.getElementById("story-action").value.trim() || "premium typography reveal";
+      const typographyStyle = compactValue("typography-style") || "Chrome letters (mirror metal)";
+      const letterStructure = compactValue("letter-structure") || "Geometric modular letters";
+      const surfaceFinish = compactValue("surface-finish") || "Chrome mirror finish";
+      const aesthetic = compactValue("aesthetic-style") || "Hyperreal typography art";
+      const palette = compactValue("color-palette") || "Black and gold glam";
+      const ratio = compactValue("aspect-ratio") || "4:5 portrait";
+
+      const cameraOptions = [
+        compactValue("camera-angle") || "Front-facing hero angle",
+        "Dramatic low angle",
+        "Symmetrical head-on angle",
+        "Wide environmental angle",
+        "Top-front angle"
+      ];
+      const lightingOptions = [
+        compactValue("lighting-style") || "Commercial gloss lighting",
+        "Butterfly glam lighting",
+        "Moody rim lighting",
+        "Backlit neon bloom",
+        "Golden hour luxury light"
+      ];
+      const effectOptions = [
+        compactValue("text-effect") || "Mirror shine effect",
+        "Gloss burst effect",
+        "Neon halo effect",
+        "Reflective shine effect",
+        "Shadow depth effect"
+      ];
+      const backgroundOptions = [
+        compactValue("background-environment") || getAutoBackground(typographyStyle, aesthetic),
+        "Editorial color sweep backdrop",
+        "City rooftop at night",
+        "Holographic mirror room",
+        "Gold foil glam backdrop"
+      ];
+      const motionOptions = [
+        compactValue("motion-style") || "Glow pulse motion",
+        "Bold freeze-frame energy",
+        "Smooth glossy drift",
+        "Heroic reveal motion",
+        "Floating graceful motion"
+      ];
+
+      const cameraAngle = cameraOptions[index % cameraOptions.length];
+      const lighting = lightingOptions[(index + 1) % lightingOptions.length];
+      const textEffect = effectOptions[(index + 2) % effectOptions.length];
+      const background = backgroundOptions[(index + 3) % backgroundOptions.length];
+      const motion = motionOptions[(index + 4) % motionOptions.length];
+
+      return `Variation ${index + 1}: Create a premium typography artwork featuring the text "${mainText}". Font / object style: ${typographyStyle.toLowerCase()}. Letter structure: ${letterStructure.toLowerCase()}. Surface finish: ${surfaceFinish.toLowerCase()}. Overall aesthetic: ${aesthetic.toLowerCase()}. Text effect: ${textEffect.toLowerCase()}. Color palette: ${palette.toLowerCase()}. Aspect ratio: ${ratio.toLowerCase()}. Scene direction: ${action}. Background: ${background}. Camera angle: ${cameraAngle.toLowerCase()}. Lighting: ${lighting.toLowerCase()}. Energy and motion feel: ${motion.toLowerCase()}. Render it as hyper-realistic, cinematic, polished luxury 3D typography with premium composition, crisp edge separation, rich texture, and glossy 8K ad-quality finish.`;
+    }
+
+    function generateMoreVariations() {
+      const baseExists = document.getElementById("photo-output").textContent.trim() || document.getElementById("video-output").textContent.trim();
+      if (!baseExists) return showToast("Generate a prompt first.");
+      const variations = [buildVariationPrompt(0), buildVariationPrompt(1), buildVariationPrompt(2)].join("\n\n");
+      document.getElementById("variations-output").textContent = variations;
+      document.getElementById("variations-card").classList.remove("hidden");
+      showToast("3 more variations ready.");
+    }
+
+    async function copyVariations() {
+      const text = document.getElementById("variations-output").textContent.trim();
+      if (!text) return showToast("Generate variations first.");
+      await copyText(text);
+      showToast("Variations copied.");
+    }
+
+    async function copyMarketingPack() {
+      const website = document.getElementById("website-cta-output").innerText.trim();
+      const sales = document.getElementById("sales-copy-output").innerText.trim();
+      const promo = document.getElementById("promo-angles-output").innerText.trim();
+      const combined = [`WEBSITE CTA:\n${website}`, `SALES DESCRIPTION:\n${sales}`, `PROMO ANGLES:\n${promo}`].join("\n\n");
+      if (!(website || sales || promo)) return showToast("Generate a prompt first.");
+      await copyText(combined);
+      showToast("Marketing pack copied.");
+    }
+
+    function updateLockButton(fieldId) {
+      const button = document.querySelector(`.lock-btn[data-field-id="${fieldId}"]`);
+      const field = document.getElementById(fieldId);
+      if (!button || !field) return;
+      const isLocked = lockedFields.has(fieldId);
+      button.classList.toggle("is-locked", isLocked);
+      button.setAttribute("aria-pressed", isLocked ? "true" : "false");
+      button.innerHTML = isLocked ? '<span>🔒</span><span>Locked</span>' : '<span>🔓</span><span>Lock</span>';
+      field.classList.toggle("field-locked", isLocked);
+    }
+
+    function toggleLock(fieldId) {
+      if (lockedFields.has(fieldId)) {
+        lockedFields.delete(fieldId);
+      } else {
+        lockedFields.add(fieldId);
+      }
+      updateLockButton(fieldId);
+      saveLockedFields();
+      showToast(`${fieldId.replace(/-/g, " ")} ${lockedFields.has(fieldId) ? "locked" : "unlocked"}.`);
+    }
+
+    function createLockButtons() {
+      lockableFieldIds.forEach((fieldId) => {
+        const label = document.querySelector(`label[for="${fieldId}"]`);
+        const field = document.getElementById(fieldId);
+        if (!label || !field || label.querySelector('.lock-btn')) return;
+        label.classList.add("flex", "items-center", "justify-between", "gap-3");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "lock-btn";
+        button.dataset.fieldId = fieldId;
+        button.addEventListener("click", () => toggleLock(fieldId));
+        label.appendChild(button);
+        updateLockButton(fieldId);
+      });
+    }
+
+    function ensureVariationJoinFixed() {
+      const target = document.getElementById("variations-output");
+      if (target && typeof target.textContent !== "string") target.textContent = "";
+    }
+
+    function applyConfig(config) {
+      document.getElementById("generator-heading").textContent = config.generator_heading || defaultConfig.generator_heading;
+      document.getElementById("generator-subtitle").textContent = config.generator_subtitle || defaultConfig.generator_subtitle;
+
+      const fontFamily = config.font_family || defaultConfig.font_family;
+      document.body.style.fontFamily = `${fontFamily}, Montserrat, sans-serif`;
+
+      const baseSize = config.font_size || defaultConfig.font_size;
+      document.body.style.fontSize = `${baseSize}px`;
+    }
+
+    function initialize() {
+      populateGroupedTypographySelect();
+      Object.entries(dropdownData).forEach(([id, arr]) => populateSelect(id, arr));
+      populatePresetSelect();
+      document.getElementById("footer-year").textContent = new Date().getFullYear();
+      applyConfig(defaultConfig);
+      loadHistory();
+      loadLockedFields();
+      createLockButtons();
+      ensureVariationJoinFixed();
+      setCopyButtonsState(false);
+      renderHistory();
+    }
+
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => applyConfig(config),
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
+            set: (value) => {
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
+            }
+          },
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
+            set: (value) => {
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
+            }
+          }
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ["generator_heading", config.generator_heading || defaultConfig.generator_heading],
+          ["generator_subtitle", config.generator_subtitle || defaultConfig.generator_subtitle]
+        ])
+      });
+    }
+
+    document.getElementById("style-preset").addEventListener("change", (e) => applyPreset(e.target.value));
+    document.getElementById("randomize-btn").addEventListener("click", randomizeAll);
+    document.getElementById("clear-btn").addEventListener("click", clearAll);
+    document.getElementById("generate-btn").addEventListener("click", generateOutputs);
+    document.getElementById("copy-photo-btn").addEventListener("click", copyPhoto);
+    document.getElementById("copy-video-btn").addEventListener("click", copyVideo);
+    document.getElementById("copy-both-btn-top").addEventListener("click", copyBoth);
+    document.getElementById("copy-both-btn-bottom").addEventListener("click", copyBoth);
+    document.getElementById("download-photo-btn").addEventListener("click", downloadPhoto);
+    document.getElementById("download-video-btn").addEventListener("click", downloadVideo);
+    document.getElementById("download-both-btn").addEventListener("click", downloadBoth);
+    document.getElementById("more-variations-btn").addEventListener("click", generateMoreVariations);
+    document.getElementById("copy-variations-btn").addEventListener("click", copyVariations);
+    document.getElementById("copy-jingle-btn").addEventListener("click", copyJingle);
+    document.getElementById("download-jingle-btn").addEventListener("click", downloadJingle);
+    document.getElementById("copy-marketing-btn").addEventListener("click", copyMarketingPack);
+    document.getElementById("clear-history-btn").addEventListener("click", clearSavedHistory);
+    document.getElementById("scroll-up-btn").addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
+    document.getElementById("scroll-down-btn").addEventListener("click", () => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
+
+    initialize();
+  </script>
+</body>
+</html>
